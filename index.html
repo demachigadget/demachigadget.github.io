@@ -2,124 +2,146 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QR解錠キー 発行 | 出町ガジェット</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#3A9B3A" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="QR Key" />
+  <title>QRキー発行 | Demachi Gadget</title>
+  <link rel="manifest" href="manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     :root {
-      --sky:    #7ECEF4;
-      --accent: #3A9B3A;
+      --sky:         #7ECEF4;
+      --accent:      #3A9B3A;
       --accent-dark: #2E7D2E;
-      --yellow: #FFD93D;
-      --green:  #3BB273;
-      --black:  #1A1A1A;
-      --white:  #FFFFFF;
+      --yellow:      #FFD93D;
+      --green:       #3BB273;
+      --black:       #1A1A1A;
+      --white:       #FFFFFF;
+      --gray:        #666;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
       background: var(--sky);
       color: var(--black);
       min-height: 100vh;
+      min-height: -webkit-fill-available;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 32px 16px 48px;
+      /* safe-area insets for notch phones */
+      padding: env(safe-area-inset-top, 8px) 14px
+               calc(env(safe-area-inset-bottom, 0px) + 80px);
     }
 
-    /* ロゴ */
+    /* ── ロゴ ── */
     .site-logo {
-      font-size: 1.05rem;
-      font-weight: 900;
       display: inline-flex;
       align-items: center;
       gap: 8px;
       background: var(--white);
       border: 2.5px solid var(--black);
       border-radius: 30px;
-      padding: 6px 20px 6px 10px;
+      padding: 6px 16px 6px 10px;
       box-shadow: 3px 3px 0 var(--black);
-      margin-bottom: 24px;
+      margin: 18px 0;
     }
     .site-logo .dot {
-      width: 28px; height: 28px;
+      width: 26px; height: 26px;
       background: var(--accent);
       border-radius: 50%;
       border: 2px solid var(--black);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
+    .logo-ja { display: block; font-size: 0.82rem; font-weight: 900; }
+    .logo-en { display: block; font-size: 0.62rem; color: var(--gray); }
 
-    /* メインカード */
+    /* ── メインカード ── */
     .main-card {
       width: 100%;
-      max-width: 520px;
+      max-width: 480px;
       background: var(--white);
       border: 2.5px solid var(--black);
-      border-radius: 14px;
+      border-radius: 16px;
       box-shadow: 5px 5px 0 var(--black);
       overflow: hidden;
+      margin-bottom: 14px;
     }
 
-    /* カードヘッダー */
+    /* ── カードヘッダー ── */
     .card-top {
       background: var(--accent);
-      padding: 24px 28px 20px;
+      padding: 20px 22px;
       position: relative;
       overflow: hidden;
     }
     .card-top::before {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1.5px, transparent 1.5px);
       background-size: 14px 14px;
     }
     .card-top-inner { position: relative; z-index: 1; }
     .top-icon {
-      width: 52px; height: 52px;
+      width: 46px; height: 46px;
       background: var(--yellow);
       border: 2.5px solid #fff;
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .card-top h1 {
-      font-size: 1.5rem; font-weight: 900;
-      color: #fff; margin-bottom: 6px;
+      font-size: 1.28rem; font-weight: 900;
+      color: #fff; margin-bottom: 3px;
       text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+      line-height: 1.2;
     }
-    .card-top p { font-size: 0.88rem; color: rgba(255,255,255,0.9); }
+    .card-top h1 .en {
+      display: block; font-size: 0.72rem;
+      font-weight: 700; color: rgba(255,255,255,0.8);
+      margin-top: 2px;
+    }
+    .card-top p       { font-size: 0.8rem; color: rgba(255,255,255,0.9); line-height: 1.4; }
+    .card-top p .en   { display: block; font-size: 0.7rem; color: rgba(255,255,255,0.7); margin-top: 2px; }
 
-    /* カード本体 */
-    .card-body { padding: 28px; }
+    /* ── カードボディ ── */
+    .card-body { padding: 22px; }
 
-    /* フォーム */
+    /* ── フィールドラベル ── */
     .field-label {
-      font-weight: 700; font-size: 0.9rem;
-      margin-bottom: 7px;
-      display: flex; align-items: center; gap: 7px;
+      font-weight: 700; font-size: 0.86rem;
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
     }
+    .field-label .en { font-size: 0.7rem; color: var(--gray); font-weight: 400; }
     .label-icon {
       width: 22px; height: 22px;
       background: var(--sky);
       border: 1.5px solid var(--black);
       border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
     }
-    .tag-required { font-size: 0.7rem; font-weight: 700; background: #FF4D4D; color: #fff; border-radius: 4px; padding: 1px 6px; }
-    .tag-optional { font-size: 0.7rem; font-weight: 700; background: #E0E0E0; color: #666; border-radius: 4px; padding: 1px 6px; }
+    .tag-required { font-size: 0.66rem; font-weight: 700; background: #FF4D4D; color: #fff; border-radius: 4px; padding: 1px 6px; }
+    .tag-optional { font-size: 0.66rem; font-weight: 700; background: #E0E0E0; color: #666; border-radius: 4px; padding: 1px 6px; }
+
+    /* ── フォーム入力 ── */
     .form-input {
-      width: 100%; padding: 11px 14px;
-      border: 2px solid #CCC; border-radius: 10px;
-      font-size: 0.95rem; font-family: inherit;
+      width: 100%; padding: 14px 16px;
+      border: 2px solid #CCC; border-radius: 12px;
+      font-size: 1rem; font-family: inherit;
       background: #FAFAFA; outline: none;
       transition: border-color 0.15s, box-shadow 0.15s;
+      -webkit-appearance: none;
     }
     .form-input:focus {
       border-color: var(--accent);
@@ -127,260 +149,400 @@
       background: #fff;
     }
 
-    /* ボタン */
+    /* ── 発行ボタン ── */
     .btn-issue {
-      width: 100%; padding: 14px;
+      width: 100%; padding: 16px;
       background: var(--accent); color: #fff;
       border: 2.5px solid var(--black);
-      border-radius: 10px;
-      font-size: 1.05rem; font-weight: 900; font-family: inherit;
+      border-radius: 12px;
+      font-size: 1rem; font-weight: 900; font-family: inherit;
       cursor: pointer;
       box-shadow: 3px 3px 0 var(--black);
       transition: transform 0.1s, box-shadow 0.1s;
       display: flex; align-items: center; justify-content: center; gap: 8px;
+      -webkit-tap-highlight-color: transparent;
     }
-    .btn-issue:hover  { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--black); }
-    .btn-issue:active { transform: translate(2px,2px);   box-shadow: 1px 1px 0 var(--black); }
+    .btn-issue .label-wrap { text-align: center; }
+    .btn-issue .label-ja   { display: block; font-size: 1rem; }
+    .btn-issue .label-en   { display: block; font-size: 0.7rem; opacity: 0.85; font-weight: 700; }
+    .btn-issue:active  { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--black); }
     .btn-issue:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* ステップ */
-    .divider { border: none; border-top: 2px dashed #DDD; margin: 24px 0; }
-    .steps-title { font-size: 0.78rem; font-weight: 700; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
-    .step-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    /* ── ステップ ── */
+    .divider { border: none; border-top: 2px dashed #DDD; margin: 20px 0; }
+    .steps-title { font-size: 0.73rem; font-weight: 700; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+    .step-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
     .step-num {
-      width: 30px; height: 30px;
+      width: 28px; height: 28px;
       background: var(--yellow); border: 2px solid var(--black);
       border-radius: 8px; display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: 0.9rem; flex-shrink: 0;
+      font-weight: 900; font-size: 0.85rem; flex-shrink: 0;
       box-shadow: 2px 2px 0 var(--black);
     }
-    .step-text strong { display: block; font-size: 0.88rem; font-weight: 700; }
-    .step-text span   { font-size: 0.82rem; color: #666; }
+    .step-text strong { display: block; font-size: 0.84rem; font-weight: 700; }
+    .step-text .en    { display: block; font-size: 0.73rem; color: var(--gray); margin-top: 1px; }
 
-    /* エラー */
+    /* ── エラー ── */
     .error-box {
-      background: #FFEBEE; border: 2px solid #E53935;
+      background: #FFEBED; border: 2px solid #E53935;
       border-radius: 10px; padding: 12px 16px;
-      font-size: 0.88rem; font-weight: 700; color: #C62828;
-      margin-bottom: 20px; display: none;
+      font-size: 0.85rem; font-weight: 700; color: #C62828;
+      margin-bottom: 16px; display: none;
     }
 
-    /* ローディング */
-    .loading-box {
-      text-align: center; padding: 20px 0;
-      display: none;
-    }
+    /* ── ローディング ── */
+    .loading-box { text-align: center; padding: 24px 0; display: none; }
     .spinner {
       width: 40px; height: 40px;
-      border: 4px solid #E0E0E0;
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      border: 4px solid #E0E0E0; border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
       margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* 発行完了 */
+    /* ── 成功ビュー ── */
     .success-view { display: none; }
     .success-badge {
       display: inline-flex; align-items: center; gap: 6px;
       background: var(--green); color: #fff;
       border: 2.5px solid var(--black);
       border-radius: 30px; padding: 6px 18px;
-      font-weight: 900; font-size: 0.92rem;
+      font-weight: 900; font-size: 0.88rem;
       box-shadow: 2px 2px 0 var(--black);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .qr-result-box {
-      background: var(--sky);
-      border: 2.5px solid var(--black);
-      border-radius: 12px; padding: 24px;
-      text-align: center; margin-bottom: 20px;
+      background: var(--sky); border: 2.5px solid var(--black);
+      border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 16px;
       box-shadow: 3px 3px 0 rgba(0,0,0,0.08);
     }
-    .user-name-label { font-size: 0.88rem; font-weight: 700; color: #444; margin-bottom: 14px; }
+    .user-name-label { font-size: 0.84rem; font-weight: 700; color: #444; margin-bottom: 12px; }
     .user-name-label strong { color: var(--accent-dark); }
-    #qr-canvas { display: flex; justify-content: center; margin-bottom: 14px; }
+    #qr-canvas { display: flex; justify-content: center; margin-bottom: 12px; }
     #qr-canvas canvas, #qr-canvas img {
-      border-radius: 8px;
-      border: 3px solid var(--black);
-      box-shadow: 3px 3px 0 var(--black);
+      border-radius: 8px; border: 3px solid var(--black); box-shadow: 3px 3px 0 var(--black);
     }
     .btn-download {
       display: inline-flex; align-items: center; gap: 6px;
       background: var(--yellow); color: var(--black);
-      border: 2.5px solid var(--black);
-      border-radius: 8px; padding: 9px 20px;
-      font-size: 0.88rem; font-weight: 700; font-family: inherit;
+      border: 2.5px solid var(--black); border-radius: 8px; padding: 10px 18px;
+      font-size: 0.84rem; font-weight: 700; font-family: inherit;
       cursor: pointer; text-decoration: none;
       box-shadow: 2px 2px 0 var(--black);
-      transition: transform 0.1s, box-shadow 0.1s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .btn-download:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); color: var(--black); }
-    .token-label { font-size: 0.75rem; font-weight: 700; color: #888; margin: 16px 0 4px; }
+    .btn-download:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--black); }
+    .token-label { font-size: 0.7rem; font-weight: 700; color: #888; margin: 14px 0 4px; }
     .token-box {
       background: #1A1A1A; color: #FFD93D;
-      font-family: 'Courier New', monospace; font-size: 0.8rem;
+      font-family: 'Courier New', monospace; font-size: 0.72rem;
       border-radius: 8px; padding: 10px 14px;
-      word-break: break-all; text-align: left;
-      border: 2px solid #333;
+      word-break: break-all; text-align: left; border: 2px solid #333;
     }
     .info-box {
       background: #fff; border: 2px solid var(--black);
-      border-radius: 10px; padding: 12px 16px;
-      font-size: 0.85rem;
-      display: flex; gap: 10px; align-items: flex-start;
-      margin-bottom: 20px;
+      border-radius: 10px; padding: 12px 14px; font-size: 0.8rem;
+      display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px;
     }
     .info-icon {
-      width: 24px; height: 24px;
-      background: var(--sky); border: 2px solid var(--black);
-      border-radius: 50%;
+      width: 24px; height: 24px; background: var(--sky);
+      border: 2px solid var(--black); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; flex-shrink: 0;
+      font-size: 0.75rem; flex-shrink: 0;
     }
     .btn-back {
       display: inline-flex; align-items: center; gap: 6px;
       background: #fff; color: var(--black);
-      border: 2px solid var(--black);
-      border-radius: 8px; padding: 9px 20px;
-      font-size: 0.88rem; font-weight: 700; font-family: inherit;
-      cursor: pointer;
-      box-shadow: 2px 2px 0 var(--black);
-      transition: transform 0.1s, box-shadow 0.1s;
+      border: 2px solid var(--black); border-radius: 8px; padding: 10px 20px;
+      font-size: 0.84rem; font-weight: 700; font-family: inherit;
+      cursor: pointer; box-shadow: 2px 2px 0 var(--black);
+      -webkit-tap-highlight-color: transparent;
     }
-    .btn-back:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); }
+    .btn-back:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--black); }
 
-    .footer-note { text-align: center; font-size: 0.78rem; color: rgba(0,0,0,0.45); margin-top: 20px; }
+    /* ── フッター ── */
+    .footer-note { text-align: center; font-size: 0.7rem; color: rgba(0,0,0,0.45); margin-top: 14px; line-height: 1.6; }
+
+    /* ════════════════════════════════════════
+       PWA インストールバナー
+    ════════════════════════════════════════ */
+    .install-banner {
+      display: none; /* JS で show */
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--white);
+      border-top: 2.5px solid var(--black);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+      align-items: center; gap: 10px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.13);
+      z-index: 100;
+    }
+    .install-banner-icon {
+      width: 42px; height: 42px;
+      background: var(--accent); border: 2px solid var(--black);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .install-banner-text { flex: 1; min-width: 0; }
+    .install-banner-text strong { display: block; font-size: 0.86rem; font-weight: 700; }
+    .install-banner-text .en    { display: block; font-size: 0.7rem; color: var(--gray); }
+    .btn-install {
+      background: var(--accent); color: #fff;
+      border: 2px solid var(--black); border-radius: 8px; padding: 8px 14px;
+      font-size: 0.8rem; font-weight: 700; font-family: inherit;
+      cursor: pointer; box-shadow: 2px 2px 0 var(--black);
+      white-space: nowrap; flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-install-dismiss {
+      background: none; border: none; cursor: pointer;
+      color: var(--gray); font-size: 1.2rem; padding: 4px; flex-shrink: 0;
+    }
+
+    /* ════════════════════════════════════════
+       iOS インストールモーダル
+    ════════════════════════════════════════ */
+    .ios-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200; align-items: flex-end; justify-content: center;
+    }
+    .ios-overlay.open { display: flex; }
+    .ios-modal {
+      background: var(--white);
+      border: 2.5px solid var(--black);
+      border-radius: 18px 18px 0 0;
+      padding: 24px 22px calc(24px + env(safe-area-inset-bottom, 0px));
+      width: 100%; max-width: 480px;
+    }
+    .ios-modal h3 { font-size: 1rem; font-weight: 900; margin-bottom: 16px; }
+    .ios-modal h3 .en { font-size: 0.72rem; font-weight: 400; color: var(--gray); display: block; margin-top: 2px; }
+    .ios-step { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .ios-step-num {
+      width: 28px; height: 28px; background: var(--sky);
+      border: 2px solid var(--black); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.82rem; flex-shrink: 0;
+    }
+    .ios-step-text { flex: 1; }
+    .ios-step-text strong { display: block; font-size: 0.86rem; }
+    .ios-step-text .en    { font-size: 0.73rem; color: var(--gray); }
+    .ios-step-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .btn-ios-close {
+      width: 100%; padding: 13px;
+      background: var(--black); color: #fff;
+      border: 2px solid var(--black); border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700; font-family: inherit;
+      cursor: pointer; margin-top: 8px;
+    }
+
+    /* ── 極小スクリーン対応 ── */
+    @media (max-width: 360px) {
+      .card-body { padding: 18px; }
+      .card-top  { padding: 16px 18px; }
+      .card-top h1 { font-size: 1.1rem; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- ロゴ -->
+  <!-- ロゴ / Logo -->
   <div class="site-logo">
-    <span class="dot">🔑</span>
-    <span>出町ガジェット / QR解錠キー</span>
+    <span class="dot">📦</span>
+    <span>
+      <span class="logo-ja">出町ガジェット / QRキー発行</span>
+      <span class="logo-en">Demachi Gadget / QR Key Issuance</span>
+    </span>
   </div>
 
   <div class="main-card">
 
-    <!-- カードヘッダー -->
+    <!-- カードヘッダー / Card header -->
     <div class="card-top">
       <div class="card-top-inner">
         <div class="top-icon" id="header-icon">📲</div>
-        <h1 id="header-title">QR解錠キーを発行する</h1>
-        <p id="header-sub">名前を入力するだけで、あなた専用のQRコードキーを発行します。</p>
+        <h1 id="header-title">QRキーを発行する
+          <span class="en" id="header-title-en">Issue Your QR Key</span>
+        </h1>
+        <p id="header-sub">お名前を入力して、あなた専用のQRキーを発行します。
+          <span class="en" id="header-sub-en">Enter your name to receive a personal QR key.</span>
+        </p>
       </div>
     </div>
 
     <div class="card-body">
 
-      <!-- エラー表示 -->
+      <!-- エラーボックス / Error -->
       <div class="error-box" id="error-box">⚠️ <span id="error-msg"></span></div>
 
-      <!-- ローディング -->
+      <!-- ローディング / Loading -->
       <div class="loading-box" id="loading-box">
         <div class="spinner"></div>
-        <div style="font-size:0.9rem; color:#666; font-weight:700;">QRコードを登録中...</div>
+        <div style="font-size:0.88rem; color:#666; font-weight:700;">
+          QRコードを生成中…
+          <span style="display:block; font-size:0.75rem; margin-top:4px;">Generating your QR code…</span>
+        </div>
       </div>
 
-      <!-- 入力フォーム -->
+      <!-- フォームビュー / Form -->
       <div id="form-view">
         <form id="qr-form">
           <div style="margin-bottom:18px;">
             <div class="field-label">
               <span class="label-icon">👤</span>
-              お名前
-              <span class="tag-required">必須</span>
+              お名前 <span class="en">/ Name</span>
+              <span class="tag-required">必須 Required</span>
             </div>
             <input type="text" class="form-input" id="input-name"
-                   placeholder="例：山田 太郎" required maxlength="64" />
+                   placeholder="例：山田 太郎 / e.g. Taro Yamada"
+                   required maxlength="64" autocomplete="name" />
           </div>
           <div style="margin-bottom:24px;">
             <div class="field-label">
               <span class="label-icon">✉️</span>
-              メールアドレス
-              <span class="tag-optional">任意</span>
+              メールアドレス <span class="en">/ Email</span>
+              <span class="tag-optional">任意 Optional</span>
             </div>
             <input type="email" class="form-input" id="input-email"
-                   placeholder="例：taro@example.com" maxlength="128" />
+                   placeholder="例：taro@example.com"
+                   maxlength="128" autocomplete="email" />
           </div>
           <button type="submit" class="btn-issue" id="submit-btn">
-            <span style="font-size:1.2rem;">📲</span>
-            QRコードキーを発行する
+            <span style="font-size:1.3rem;">📲</span>
+            <span class="label-wrap">
+              <span class="label-ja">QRキーを発行する</span>
+              <span class="label-en">Issue QR Key</span>
+            </span>
           </button>
         </form>
 
         <hr class="divider" />
 
-        <div class="steps-title">📖 使い方</div>
+        <div class="steps-title">📋 使い方 / How to Use</div>
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-text">
-            <strong>名前を入力して発行</strong>
-            <span>お名前を入力して「発行する」ボタンを押してください。</span>
+            <strong>お名前を入力してボタンを押す</strong>
+            <span class="en">Enter your name and tap the button</span>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-text">
-            <strong>QRコードを保存・印刷</strong>
-            <span>表示されたQRコードをスマホに保存するか印刷してください。</span>
+            <strong>QRコードを受け取る</strong>
+            <span class="en">Receive your QR code</span>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-text">
-            <strong>スキャナーにかざして解錠</strong>
-            <span>ドアのQRスキャナーにかざすと解錠されます。</span>
+            <strong>スキャンして解錠</strong>
+            <span class="en">Scan the code to unlock the door</span>
           </div>
         </div>
-      </div>
+      </div><!-- /form-view -->
 
-      <!-- 発行完了 -->
+      <!-- 成功ビュー / Success -->
       <div class="success-view" id="success-view">
         <div style="text-align:center;">
-          <div class="success-badge">✅ 発行完了！</div>
+          <div class="success-badge">✅ 発行完了！ / Issued!</div>
         </div>
         <div class="qr-result-box">
           <div class="user-name-label">
-            <strong id="result-name"></strong> さんのQRコードキー
+            <strong id="result-name"></strong> さんのQRキー / Your QR Key
           </div>
           <div id="qr-canvas"></div>
           <button class="btn-download" id="btn-download">
-            ⬇️ QRコードをダウンロード
+            ⬇️ ダウンロード / Download QR
           </button>
-          <div class="token-label">トークン（控え用）</div>
+          <div class="token-label">トークン（管理用 / Token ID）</div>
           <div class="token-box" id="result-token"></div>
         </div>
         <div class="info-box">
           <div class="info-icon">ℹ️</div>
-          <div>このQRコードをスマホに保存するか印刷して、ドアのスキャナーにかざしてください。</div>
+          <div>
+            このQRコードをスマホに保存し、ドアのスキャナーにかざすと解錠します。
+            <span style="display:block; font-size:0.73rem; color:var(--gray); margin-top:3px;">
+              Save this QR code. Hold it up to the door scanner to unlock.
+            </span>
+          </div>
         </div>
         <div style="text-align:center;">
           <button class="btn-back" onclick="resetForm()">
-            ➕ 別のキーを発行する
+            ↩ 別のキーを発行する / Issue Another Key
           </button>
         </div>
-      </div>
+      </div><!-- /success-view -->
 
+    </div><!-- /card-body -->
+  </div><!-- /main-card -->
+
+  <div class="footer-note">
+    🔒 QRキーはUUIDで管理。不正利用は記録・無効化できます。<br>
+    <span style="font-size:0.65rem;">QR keys managed by UUID. Unauthorized use can be tracked &amp; revoked.</span>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PWA インストールバナー
+  ══════════════════════════════════════ -->
+  <div class="install-banner" id="install-banner">
+    <div class="install-banner-icon">📱</div>
+    <div class="install-banner-text">
+      <strong>ホーム画面に追加する</strong>
+      <span class="en">Add to Home Screen</span>
+    </div>
+    <button class="btn-install" id="btn-install">追加 / Add</button>
+    <button class="btn-install-dismiss" id="btn-install-dismiss" aria-label="閉じる">✕</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       iOS インストールモーダル
+  ══════════════════════════════════════ -->
+  <div class="ios-overlay" id="ios-overlay">
+    <div class="ios-modal">
+      <h3>ホーム画面へ追加
+        <span class="en">Add to Home Screen</span>
+      </h3>
+      <div class="ios-step">
+        <div class="ios-step-num">1</div>
+        <div class="ios-step-text">
+          <strong>Safari の共有ボタンをタップ</strong>
+          <span class="en">Tap the Share button in Safari</span>
+        </div>
+        <span class="ios-step-icon">⎙</span>
+      </div>
+      <div class="ios-step">
+        <div class="ios-step-num">2</div>
+        <div class="ios-step-text">
+          <strong>「ホーム画面に追加」を選ぶ</strong>
+          <span class="en">Select "Add to Home Screen"</span>
+        </div>
+        <span class="ios-step-icon">＋</span>
+      </div>
+      <div class="ios-step">
+        <div class="ios-step-num">3</div>
+        <div class="ios-step-text">
+          <strong>「追加」をタップして完了</strong>
+          <span class="en">Tap "Add" to finish</span>
+        </div>
+        <span class="ios-step-icon">✅</span>
+      </div>
+      <button class="btn-ios-close" onclick="closeIOSModal()">閉じる / Close</button>
     </div>
   </div>
 
-  <div class="footer-note">
-    🔒 QRコードはUUIDで生成されており、推測・複製は不可能です。
-  </div>
-
   <script>
-    // ============================================================
-    // ★★★ ここを編集してください ★★★
-    // Apps Script をデプロイした後、表示される URL を貼り付けてください
-    // 例: https://script.google.com/macros/s/AKfyc.../exec
-    // ============================================================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgKbx6ewhWfnBeApLQe_skpx4zhJcEWvG4zPdiKrrpEMNVZqVfG2aZ9QNMMkcuWvOQ/exec";
-    // ============================================================
+    // ================================================================
+    // ☆ Apps Script URL — 再デプロイ時はここを更新してください
+    //   Update this URL if you redeploy the Apps Script
+    // ================================================================
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbzgKbx6ewhWfnBeApLQe_skpx4zhJcEWvG4zPdiKrrpEMNVZqVfG2aZ9QNMMkcuWvOQ/exec";
+    // ================================================================
 
-    // UUID v4 生成
+    // ── UUID v4 生成 ──
     function generateUUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
         const r = Math.random() * 16 | 0;
@@ -388,7 +550,7 @@
       });
     }
 
-    // QRコード描画
+    // ── QRコード生成 ──
     let currentToken = "";
     function buildQR(token) {
       const el = document.getElementById('qr-canvas');
@@ -401,7 +563,7 @@
       });
     }
 
-    // QRダウンロード
+    // ── QRダウンロード ──
     document.getElementById('btn-download').addEventListener('click', () => {
       const canvas = document.querySelector('#qr-canvas canvas');
       if (!canvas) return;
@@ -412,45 +574,43 @@
       a.click();
     });
 
-    // フォーム送信
+    // ── フォーム送信 ──
     document.getElementById('qr-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-
-      const name  = document.getElementById('input-name').value.trim();
+      const name = document.getElementById('input-name').value.trim();
       if (!name) return;
 
       const token = generateUUID();
       currentToken = token;
 
       // UI: ローディング表示
-      document.getElementById('form-view').style.display   = 'none';
-      document.getElementById('loading-box').style.display = 'block';
-      document.getElementById('error-box').style.display   = 'none';
+      document.getElementById('form-view').style.display    = 'none';
+      document.getElementById('loading-box').style.display  = 'block';
+      document.getElementById('error-box').style.display    = 'none';
 
       try {
-        // Apps Script に登録リクエスト
-        const url = `${APPS_SCRIPT_URL}?action=register&name=${encodeURIComponent(name)}&token=${token}`;
+        const url  = `${APPS_SCRIPT_URL}?action=register&name=${encodeURIComponent(name)}&token=${token}`;
         const res  = await fetch(url);
         const data = await res.json();
 
         if (data.result !== "ok") {
-          throw new Error(data.message || "登録に失敗しました");
+          throw new Error(data.message || "登録に失敗しました / Registration failed");
         }
 
-        // 成功: 発行完了画面へ
+        // 成功 / Success
         document.getElementById('loading-box').style.display  = 'none';
         document.getElementById('success-view').style.display = 'block';
         document.getElementById('result-name').textContent    = name;
         document.getElementById('result-token').textContent   = token;
         document.getElementById('header-icon').textContent    = '✅';
-        document.getElementById('header-title').textContent   = '発行完了！';
-        document.getElementById('header-sub').textContent     = 'QRコードキーを発行しました。保存してください。';
+        document.getElementById('header-title').innerHTML     =
+          '発行完了！<span class="en" id="header-title-en">Issued Successfully!</span>';
+        document.getElementById('header-sub').innerHTML       =
+          'QRコードを保存して、ドアにかざしてください。<span class="en" id="header-sub-en">Save the QR code and hold it to the door scanner.</span>';
 
-        // QR描画（少し遅延させてDOM確定後に実行）
         setTimeout(() => buildQR(token), 100);
 
       } catch (err) {
-        // エラー表示
         document.getElementById('loading-box').style.display = 'none';
         document.getElementById('form-view').style.display   = 'block';
         document.getElementById('error-box').style.display   = 'flex';
@@ -458,15 +618,77 @@
       }
     });
 
-    // フォームリセット
+    // ── フォームリセット ──
     function resetForm() {
-      document.getElementById('form-view').style.display    = 'block';
-      document.getElementById('success-view').style.display = 'none';
-      document.getElementById('error-box').style.display    = 'none';
+      document.getElementById('form-view').style.display      = 'block';
+      document.getElementById('success-view').style.display   = 'none';
+      document.getElementById('error-box').style.display      = 'none';
       document.getElementById('qr-form').reset();
-      document.getElementById('header-icon').textContent    = '📲';
-      document.getElementById('header-title').textContent   = 'QR解錠キーを発行する';
-      document.getElementById('header-sub').textContent     = '名前を入力するだけで、あなた専用のQRコードキーを発行します。';
+      document.getElementById('header-icon').textContent      = '📲';
+      document.getElementById('header-title').innerHTML       =
+        'QRキーを発行する<span class="en" id="header-title-en">Issue Your QR Key</span>';
+      document.getElementById('header-sub').innerHTML         =
+        'お名前を入力して、あなた専用のQRキーを発行します。<span class="en" id="header-sub-en">Enter your name to receive a personal QR key.</span>';
+    }
+
+    // ════════════════════════════════════════
+    // PWA インストール機能
+    // ════════════════════════════════════════
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('install-banner');
+    const btnInstall    = document.getElementById('btn-install');
+    const btnDismiss    = document.getElementById('btn-install-dismiss');
+
+    // すでにスタンドアロンモードならバナーを出さない
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true;
+    if (isStandalone) {
+      installBanner.style.display = 'none';
+    }
+
+    // Chrome / Android: beforeinstallprompt イベント
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!isStandalone) installBanner.style.display = 'flex';
+    });
+
+    // インストールボタン押下
+    btnInstall.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        // Chrome/Android ネイティブプロンプト
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBanner.style.display = 'none';
+      } else {
+        // iOS: 手順モーダルを表示
+        document.getElementById('ios-overlay').classList.add('open');
+        installBanner.style.display = 'none';
+      }
+    });
+
+    // 閉じるボタン
+    btnDismiss.addEventListener('click', () => {
+      installBanner.style.display = 'none';
+    });
+
+    // iOS 検出: Safari で開いていてスタンドアロンでなければバナー表示
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS && !isStandalone) {
+      setTimeout(() => { installBanner.style.display = 'flex'; }, 1500);
+    }
+
+    function closeIOSModal() {
+      document.getElementById('ios-overlay').classList.remove('open');
+    }
+
+    // ── Service Worker 登録 ──
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
     }
   </script>
 </body>

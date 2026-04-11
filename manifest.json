@@ -1,0 +1,24 @@
+{
+  "name": "QRキー発行 | Demachi Gadget",
+  "short_name": "QR Key",
+  "description": "QRコードでスマートロックを解錠 / Unlock smart lock with QR code",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#7ECEF4",
+  "theme_color": "#3A9B3A",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
