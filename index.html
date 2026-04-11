@@ -8,6 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="QR Key" />
+  <!-- 検索エンジンによるインデックスを禁止 / Block search engine indexing -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
   <title>QRキー発行 | Demachi Gadget</title>
   <link rel="manifest" href="manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
@@ -475,20 +477,7 @@
           <div class="success-badge">✅ 発行完了！ / Issued!</div>
         </div>
 
-        <!-- ① アプリ化ボタン（最優先） -->
-        <button class="btn-add-app" id="btn-add-app">
-          <span style="font-size:1.3rem;">📱</span>
-          <span>
-            <span class="label-ja">ホーム画面に追加してアプリとして使う</span>
-            <span class="label-en">Add to Home Screen — use as an app</span>
-          </span>
-        </button>
-        <div class="app-hint" id="app-hint">
-          いつでもすぐ呼び出せるようにアプリとして保存しましょう<br>
-          <span style="font-size:0.66rem;">Save as an app so you can open it instantly anytime</span>
-        </div>
-
-        <!-- ② 発行完了カード（スクリーンショット対象） -->
+        <!-- ① 発行完了カード（スクリーンショット対象） -->
         <div class="share-card" id="share-card">
           <div class="share-card-header">
             <div class="share-card-header-dot">📦</div>
@@ -508,6 +497,19 @@
             <div class="share-token-label">TOKEN ID</div>
             <div class="share-token-box" id="result-token"></div>
           </div>
+        </div>
+
+        <!-- ② アプリ化ボタン -->
+        <button class="btn-add-app" id="btn-add-app">
+          <span style="font-size:1.3rem;">📱</span>
+          <span>
+            <span class="label-ja">ホーム画面に追加してアプリとして使う</span>
+            <span class="label-en">Add to Home Screen — use as an app</span>
+          </span>
+        </button>
+        <div class="app-hint" id="app-hint">
+          いつでもすぐ呼び出せるようにアプリとして保存しましょう<br>
+          <span style="font-size:0.66rem;">Save as an app so you can open it instantly anytime</span>
         </div>
 
         <!-- ③ カード保存ボタン -->

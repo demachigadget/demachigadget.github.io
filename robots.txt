@@ -1,0 +1,13 @@
+# Block all search engine crawlers
+User-agent: *
+Disallow: /
+
+# Explicitly block major crawlers
+User-agent: Googlebot
+Disallow: /
+
+User-agent: Bingbot
+Disallow: /
+
+User-agent: Slurp
+Disallow: /
