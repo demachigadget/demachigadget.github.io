@@ -271,6 +271,46 @@
     .btn-download:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--black); }
     .btn-download:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+    /* ════════════════════════════════════════
+       OTP 認証ビュー
+    ════════════════════════════════════════ */
+    .otp-info-box {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: #E8F5E9; border: 2px solid var(--accent);
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 18px;
+    }
+    .otp-email-sent { font-size: 0.88rem; font-weight: 700; }
+    .otp-email-sent-en { font-size: 0.72rem; color: var(--gray); }
+    .otp-email-addr {
+      font-size: 0.85rem; font-weight: 700; color: var(--accent-dark);
+      margin-top: 2px; word-break: break-all;
+    }
+    .otp-input {
+      font-size: 2rem; font-weight: 900; text-align: center;
+      letter-spacing: 0.5em; font-family: 'Courier New', monospace;
+      padding: 14px 10px;
+    }
+    .otp-timer-box {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.8rem; color: #666; margin-bottom: 14px;
+      background: #FFF8E7; border: 1.5px solid var(--yellow);
+      border-radius: 8px; padding: 7px 12px;
+    }
+    #otp-countdown.expired { color: #C62828; font-weight: 700; }
+    .btn-resend {
+      background: none; border: none; cursor: pointer;
+      font-size: 0.78rem; color: var(--accent-dark); font-family: inherit;
+      padding: 6px 0; -webkit-tap-highlight-color: transparent; font-weight: 700;
+    }
+    .btn-resend:disabled { color: var(--gray); cursor: not-allowed; }
+    .resend-wait { font-size: 0.72rem; color: var(--gray); font-weight: 400; }
+    .btn-otp-back {
+      background: none; border: none; cursor: pointer;
+      font-size: 0.78rem; color: var(--gray); font-family: inherit;
+      padding: 6px 8px; text-decoration: underline;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     /* ── info・戻るボタン ── */
     .info-box {
       background: #fff; border: 2px solid var(--black); border-radius: 10px;
@@ -437,8 +477,8 @@
       <div class="loading-box" id="loading-box">
         <div class="spinner"></div>
         <div style="font-size:0.88rem; color:#666; font-weight:700;">
-          QRコードを生成中…
-          <span style="display:block; font-size:0.75rem; margin-top:4px;">Generating your QR code…</span>
+          <span id="loading-text-ja">認証コードを送信中…</span>
+          <span id="loading-text-en" style="display:block; font-size:0.75rem; margin-top:4px;">Sending verification code…</span>
         </div>
       </div>
 
@@ -459,17 +499,17 @@
             <div class="field-label">
               <span class="label-icon">✉️</span>
               メールアドレス <span class="en">/ Email</span>
-              <span class="tag-optional">任意 Optional</span>
+              <span class="tag-required">必須 Required</span>
             </div>
             <input type="email" class="form-input" id="input-email"
                    placeholder="例：taro@example.com"
-                   maxlength="128" autocomplete="email" />
+                   required maxlength="128" autocomplete="email" />
           </div>
           <button type="submit" class="btn-issue" id="submit-btn">
-            <span style="font-size:1.3rem;">📲</span>
+            <span style="font-size:1.3rem;">📧</span>
             <span>
-              <span class="label-ja">QRキーを発行する</span>
-              <span class="label-en">Issue QR Key</span>
+              <span class="label-ja">認証コードを送る</span>
+              <span class="label-en">Send Verification Code</span>
             </span>
           </button>
         </form>
@@ -480,25 +520,70 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-text">
-            <strong>お名前を入力してボタンを押す</strong>
-            <span class="en">Enter your name and tap the button</span>
+            <strong>お名前・メールを入力してコードを送る</strong>
+            <span class="en">Enter name &amp; email, then send verification code</span>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-text">
-            <strong>QRコードを受け取る</strong>
-            <span class="en">Receive your QR code</span>
+            <strong>届いた6桁のコードを入力してQRを発行</strong>
+            <span class="en">Enter the 6-digit code from your email</span>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-text">
-            <strong>スキャンして解錠</strong>
-            <span class="en">Scan the code to unlock the door</span>
+            <strong>QRコードをドアのスキャナーにかざして解錠</strong>
+            <span class="en">Hold QR code to the door scanner to unlock</span>
           </div>
         </div>
       </div><!-- /form-view -->
+
+      <!-- ════ OTP認証ビュー ════ -->
+      <div id="otp-view" style="display:none;">
+        <div class="otp-info-box">
+          <span style="font-size:1.4rem; flex-shrink:0;">📧</span>
+          <div>
+            <div class="otp-email-sent">認証コードを送信しました</div>
+            <div class="otp-email-sent-en">Verification code sent to:</div>
+            <div class="otp-email-addr" id="otp-email-display"></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div class="field-label">
+            <span class="label-icon">🔢</span>
+            認証コード（6桁）<span class="en">/ 6-digit Code</span>
+            <span class="tag-required">必須 Required</span>
+          </div>
+          <input type="text" class="form-input otp-input" id="input-otp"
+                 placeholder="000000"
+                 maxlength="6" inputmode="numeric" pattern="[0-9]*"
+                 autocomplete="one-time-code" />
+        </div>
+
+        <div class="otp-timer-box">
+          <span>⏱</span>
+          <span>有効期限：<span id="otp-countdown">5:00</span></span>
+          <span style="font-size:0.72rem; margin-left:4px;">/ Code expires in</span>
+        </div>
+
+        <button type="button" class="btn-issue" id="btn-verify-otp" style="margin-bottom:12px;">
+          <span style="font-size:1.3rem;">🔓</span>
+          <span>
+            <span class="label-ja">QRキーを発行する</span>
+            <span class="label-en">Issue QR Key</span>
+          </span>
+        </button>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:2px;">
+          <button type="button" class="btn-resend" id="btn-resend" disabled>
+            🔄 コードを再送する <span class="resend-wait" id="resend-wait">（60秒後に有効）</span>
+          </button>
+          <button type="button" class="btn-otp-back" onclick="showFormView()">← 戻る / Back</button>
+        </div>
+      </div><!-- /otp-view -->
 
       <!-- ════ 成功ビュー ════ -->
       <div class="success-view" id="success-view">
@@ -545,8 +630,8 @@
         <button class="btn-download" id="btn-download">
           <span style="font-size:1.1rem;">🖼️</span>
           <span>
-            <span class="label-ja">発行完了カードを画像で保存</span>
-            <span class="label-en">Save QR card as image</span>
+            <span class="label-ja">発行完了カードを保存・共有</span>
+            <span class="label-en">Save / Share QR Card Image</span>
           </span>
         </button>
 
@@ -678,7 +763,16 @@
       });
     }
 
-    // ── カード全体を画像として保存 ──
+    // ================================================================
+    // カード保存・共有（Web Share API + フォールバック）
+    // ================================================================
+    function fallbackDownload(canvas, filename) {
+      const a = document.createElement('a');
+      a.download = filename;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+
     document.getElementById('btn-download').addEventListener('click', async () => {
       const btn = document.getElementById('btn-download');
       btn.disabled = true;
@@ -687,57 +781,67 @@
       try {
         const card = document.getElementById('share-card');
         const canvas = await html2canvas(card, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: null,
-          logging: false
+          scale: 2, useCORS: true, backgroundColor: null, logging: false
         });
         const name = document.getElementById('result-name').textContent.trim() || 'qrkey';
-        const a = document.createElement('a');
-        a.download = name + '_qrkey_card.png';
-        a.href = canvas.toDataURL('image/png');
-        a.click();
+        const filename = name + '_qrkey_card.png';
+
+        // Web Share API：iOS/Androidで「写真に保存」などが選択可能
+        if (navigator.share && navigator.canShare) {
+          canvas.toBlob(async (blob) => {
+            const file = new File([blob], filename, { type: 'image/png' });
+            if (navigator.canShare({ files: [file] })) {
+              try {
+                await navigator.share({ files: [file], title: 'QRキー - Demachi Gadget' });
+              } catch (shareErr) {
+                if (shareErr.name !== 'AbortError') fallbackDownload(canvas, filename);
+              }
+            } else {
+              fallbackDownload(canvas, filename);
+            }
+          }, 'image/png');
+        } else {
+          fallbackDownload(canvas, filename);
+        }
       } catch (e) {
         alert('画像の保存に失敗しました。\nFailed to save image.');
       } finally {
         btn.disabled = false;
-        btn.querySelector('.label-ja').textContent = '発行完了カードを画像で保存';
+        btn.querySelector('.label-ja').textContent = '発行完了カードを保存・共有';
       }
     });
 
-    // ── フォーム送信 ──
+    // ================================================================
+    // OTP フロー
+    // ================================================================
+    let otpEmail = '', otpName = '', otpToken = '';
+    let otpCountdownInterval = null;
+    let resendInterval = null;
+
+    // ── Step1：フォーム送信 → OTP送信 ──
     document.getElementById('qr-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('input-name').value.trim();
-      if (!name) return;
+      const name  = document.getElementById('input-name').value.trim();
+      const email = document.getElementById('input-email').value.trim();
+      if (!name || !email) return;
 
-      const token = generateUUID();
+      otpName  = name;
+      otpEmail = email;
+      otpToken = generateUUID();
 
+      setLoadingText('認証コードを送信中…', 'Sending verification code…');
       document.getElementById('form-view').style.display   = 'none';
       document.getElementById('loading-box').style.display = 'block';
       document.getElementById('error-box').style.display   = 'none';
 
       try {
-        const url  = `${APPS_SCRIPT_URL}?action=register&name=${encodeURIComponent(name)}&token=${token}`;
+        const url = `${APPS_SCRIPT_URL}?action=sendOTP&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`;
         const res  = await fetch(url);
         const data = await res.json();
+        if (data.result !== 'ok') throw new Error(data.message || '送信に失敗しました / Send failed');
 
-        if (data.result !== "ok") {
-          throw new Error(data.message || "登録に失敗しました / Registration failed");
-        }
-
-        document.getElementById('loading-box').style.display  = 'none';
-        document.getElementById('success-view').style.display = 'block';
-        document.getElementById('result-name').textContent    = name;
-        document.getElementById('result-token').textContent   = token;
-        document.getElementById('header-icon').textContent    = '✅';
-        document.getElementById('header-title').innerHTML     =
-          '発行完了！<span class="en" id="header-title-en">Issued Successfully!</span>';
-        document.getElementById('header-sub').innerHTML       =
-          'QRコードを保存して、ドアにかざしてください。<span class="en" id="header-sub-en">Save the QR code and hold it to the door scanner.</span>';
-
-        setTimeout(() => buildQR(token), 100);
-
+        document.getElementById('loading-box').style.display = 'none';
+        showOTPView();
       } catch (err) {
         document.getElementById('loading-box').style.display = 'none';
         document.getElementById('form-view').style.display   = 'block';
@@ -746,36 +850,165 @@
       }
     });
 
+    // ── Step2：OTP検証 → QR発行 ──
+    document.getElementById('btn-verify-otp').addEventListener('click', async () => {
+      const otp = document.getElementById('input-otp').value.replace(/\s/g, '');
+      if (!/^\d{6}$/.test(otp)) {
+        document.getElementById('error-box').style.display = 'flex';
+        document.getElementById('error-msg').textContent   = '6桁の数字を入力してください / Enter the 6-digit code';
+        return;
+      }
+
+      const btn = document.getElementById('btn-verify-otp');
+      btn.disabled = true;
+      setLoadingText('認証中・QRコードを生成中…', 'Verifying & generating QR code…');
+      document.getElementById('otp-view').style.display    = 'none';
+      document.getElementById('loading-box').style.display = 'block';
+      document.getElementById('error-box').style.display   = 'none';
+
+      try {
+        const url = `${APPS_SCRIPT_URL}?action=register&name=${encodeURIComponent(otpName)}&email=${encodeURIComponent(otpEmail)}&token=${otpToken}&otp=${otp}`;
+        const res  = await fetch(url);
+        const data = await res.json();
+        if (data.result !== 'ok') throw new Error(data.message || '認証に失敗しました / Verification failed');
+
+        clearInterval(otpCountdownInterval);
+        clearInterval(resendInterval);
+
+        document.getElementById('loading-box').style.display  = 'none';
+        document.getElementById('success-view').style.display = 'block';
+        document.getElementById('result-name').textContent    = otpName;
+        document.getElementById('result-token').textContent   = otpToken;
+        document.getElementById('header-icon').textContent    = '✅';
+        document.getElementById('header-title').innerHTML     =
+          '発行完了！<span class="en" id="header-title-en">Issued Successfully!</span>';
+        document.getElementById('header-sub').innerHTML       =
+          'QRコードを保存して、ドアにかざしてください。<span class="en" id="header-sub-en">Save the QR code and hold it to the door scanner.</span>';
+
+        setTimeout(() => buildQR(otpToken), 100);
+
+      } catch (err) {
+        document.getElementById('loading-box').style.display = 'none';
+        document.getElementById('otp-view').style.display   = 'block';
+        document.getElementById('error-box').style.display  = 'flex';
+        document.getElementById('error-msg').textContent    = err.message;
+        btn.disabled = false;
+      }
+    });
+
+    // ── 再送 ──
+    document.getElementById('btn-resend').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-resend');
+      btn.disabled = true;
+      try {
+        const url = `${APPS_SCRIPT_URL}?action=sendOTP&email=${encodeURIComponent(otpEmail)}&name=${encodeURIComponent(otpName)}`;
+        const res  = await fetch(url);
+        const data = await res.json();
+        if (data.result !== 'ok') throw new Error(data.message || '再送に失敗しました');
+        startOTPCountdown(5 * 60);
+        startResendTimer(60);
+      } catch (err) {
+        alert(err.message);
+        btn.disabled = false;
+      }
+    });
+
+    function setLoadingText(ja, en) {
+      document.getElementById('loading-text-ja').textContent = ja;
+      document.getElementById('loading-text-en').textContent = en;
+    }
+
+    function showOTPView() {
+      document.getElementById('otp-view').style.display = 'block';
+      document.getElementById('otp-email-display').textContent = otpEmail;
+      document.getElementById('input-otp').value = '';
+      document.getElementById('error-box').style.display = 'none';
+      startOTPCountdown(5 * 60);
+      startResendTimer(60);
+      setTimeout(() => document.getElementById('input-otp').focus(), 200);
+    }
+
+    function showFormView() {
+      document.getElementById('otp-view').style.display   = 'none';
+      document.getElementById('form-view').style.display  = 'block';
+      document.getElementById('error-box').style.display  = 'none';
+      clearInterval(otpCountdownInterval);
+      clearInterval(resendInterval);
+    }
+
+    function startOTPCountdown(seconds) {
+      clearInterval(otpCountdownInterval);
+      let remaining = seconds;
+      const el = document.getElementById('otp-countdown');
+      el.classList.remove('expired');
+      function tick() {
+        if (remaining <= 0) {
+          clearInterval(otpCountdownInterval);
+          el.textContent = '期限切れ / Expired';
+          el.classList.add('expired');
+          return;
+        }
+        const m = Math.floor(remaining / 60);
+        const s = remaining % 60;
+        el.textContent = `${m}:${String(s).padStart(2, '0')}`;
+        remaining--;
+      }
+      tick();
+      otpCountdownInterval = setInterval(tick, 1000);
+    }
+
+    function startResendTimer(seconds) {
+      clearInterval(resendInterval);
+      const btn     = document.getElementById('btn-resend');
+      const waitEl  = document.getElementById('resend-wait');
+      btn.disabled  = true;
+      let remaining = seconds;
+      function tick() {
+        if (remaining <= 0) {
+          clearInterval(resendInterval);
+          btn.disabled     = false;
+          waitEl.textContent = '';
+          return;
+        }
+        waitEl.textContent = `（${remaining}秒後に有効）`;
+        remaining--;
+      }
+      tick();
+      resendInterval = setInterval(tick, 1000);
+    }
+
     // ── フォームリセット ──
     function resetForm() {
+      clearInterval(otpCountdownInterval);
+      clearInterval(resendInterval);
       document.getElementById('form-view').style.display    = 'block';
+      document.getElementById('otp-view').style.display     = 'none';
       document.getElementById('success-view').style.display = 'none';
       document.getElementById('error-box').style.display    = 'none';
       document.getElementById('qr-form').reset();
+      document.getElementById('btn-verify-otp').disabled    = false;
       document.getElementById('header-icon').textContent    = '📲';
       document.getElementById('header-title').innerHTML     =
         'QRキーを発行する<span class="en" id="header-title-en">Issue Your QR Key</span>';
       document.getElementById('header-sub').innerHTML       =
-        'お名前を入力して、あなた専用のQRキーを発行します。<span class="en" id="header-sub-en">Enter your name to receive a personal QR key.</span>';
+        'お名前とメールアドレスを入力して、あなた専用のQRキーを発行します。<span class="en" id="header-sub-en">Enter your name and email to receive a personal QR key.</span>';
     }
 
-    // ════════════════════════════════════════
+    // ================================================================
     // PWA インストール
-    // ════════════════════════════════════════
+    // ================================================================
     let deferredPrompt = null;
 
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       window.navigator.standalone === true;
 
-    // スタンドアロン（インストール済み）時はアプリ化ボタンを非表示
     if (isStandalone) {
       document.getElementById('btn-add-app').classList.add('hidden');
       document.getElementById('app-hint').style.display = 'none';
       document.getElementById('install-banner').style.display = 'none';
     }
 
-    // Chrome/Android: beforeinstallprompt
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -784,10 +1017,7 @@
       }
     });
 
-    // アプリ化ボタン（成功ビュー内）
     document.getElementById('btn-add-app').addEventListener('click', triggerInstall);
-
-    // バナーボタン（底部）
     document.getElementById('btn-install-banner').addEventListener('click', triggerInstall);
 
     async function triggerInstall() {
@@ -801,7 +1031,6 @@
           document.getElementById('app-hint').style.display = 'none';
         }
       } else {
-        // iOS またはすでにインストール済みの場合
         document.getElementById('ios-overlay').classList.add('open');
       }
     }
@@ -810,7 +1039,6 @@
       document.getElementById('install-banner').style.display = 'none';
     });
 
-    // iOS 検出
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
     if (isIOS && !isStandalone) {
       setTimeout(() => {
