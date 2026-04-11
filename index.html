@@ -183,29 +183,28 @@
       margin-bottom: 14px;
     }
 
-    /* ── ① アプリ化ボタン（最優先） ── */
+    /* ── アプリ化ボタン ── */
     .btn-add-app {
       width: 100%; padding: 16px;
-      background: var(--black); color: var(--yellow);
-      border: 2.5px solid var(--black); border-radius: 12px;
+      background: #FF6B00; color: #fff;
+      border: 2.5px solid #CC5200; border-radius: 12px;
       font-size: 1rem; font-weight: 900; font-family: inherit;
-      cursor: pointer; box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+      cursor: pointer; box-shadow: 3px 3px 0 #CC5200;
       transition: transform 0.1s, box-shadow 0.1s;
       display: flex; align-items: center; justify-content: center; gap: 10px;
       margin-bottom: 10px;
       -webkit-tap-highlight-color: transparent;
     }
     .btn-add-app .label-ja { display: block; font-size: 0.95rem; }
-    .btn-add-app .label-en { display: block; font-size: 0.68rem; opacity: 0.75; font-weight: 700; }
-    .btn-add-app:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 rgba(0,0,0,0.3); }
-    /* すでにインストール済みのときは非表示 */
+    .btn-add-app .label-en { display: block; font-size: 0.68rem; opacity: 0.85; font-weight: 700; }
+    .btn-add-app:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #CC5200; }
     .btn-add-app.hidden { display: none; }
 
     /* アプリ化ヒント */
     .app-hint {
-      background: #FFFBEA; border: 1.5px solid var(--yellow);
+      background: #FFF3EB; border: 1.5px solid #FF6B00;
       border-radius: 8px; padding: 8px 12px;
-      font-size: 0.72rem; color: #7A6000;
+      font-size: 0.72rem; color: #7A3000;
       margin-bottom: 14px; text-align: center; line-height: 1.5;
     }
 
@@ -320,10 +319,10 @@
     .install-banner-text strong { display: block; font-size: 0.83rem; font-weight: 700; }
     .install-banner-text .en { display: block; font-size: 0.68rem; color: var(--gray); }
     .btn-install-banner {
-      background: var(--accent); color: #fff;
-      border: 2px solid var(--black); border-radius: 8px; padding: 7px 12px;
+      background: #FF6B00; color: #fff;
+      border: 2px solid #CC5200; border-radius: 8px; padding: 7px 12px;
       font-size: 0.78rem; font-weight: 700; font-family: inherit;
-      cursor: pointer; box-shadow: 2px 2px 0 var(--black);
+      cursor: pointer; box-shadow: 2px 2px 0 #CC5200;
       white-space: nowrap; flex-shrink: 0;
       -webkit-tap-highlight-color: transparent;
     }
@@ -347,24 +346,54 @@
       padding: 24px 22px calc(24px + env(safe-area-inset-bottom, 0px));
       width: 100%; max-width: 480px;
     }
-    .ios-modal h3 { font-size: 1rem; font-weight: 900; margin-bottom: 16px; }
+    .ios-modal h3 { font-size: 1rem; font-weight: 900; margin-bottom: 14px; }
     .ios-modal h3 .en { font-size: 0.72rem; font-weight: 400; color: var(--gray); display: block; margin-top: 2px; }
-    .ios-step { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+
+    /* Chrome セクション（メイン） */
+    .modal-section-chrome {
+      background: #FFF3EB; border: 2px solid #FF6B00;
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
+    }
+    .modal-section-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; font-weight: 900; margin-bottom: 10px;
+    }
+    .modal-section-label .badge {
+      background: #FF6B00; color: #fff;
+      font-size: 0.65rem; font-weight: 700; border-radius: 4px; padding: 1px 6px;
+    }
+    .modal-section-label .badge-sub {
+      background: var(--gray); color: #fff;
+      font-size: 0.65rem; font-weight: 700; border-radius: 4px; padding: 1px 6px;
+    }
+
+    /* Safari セクション（サブ） */
+    .modal-section-safari {
+      background: #F5F5F5; border: 1.5px solid #CCC;
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    .ios-step { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .ios-step:last-child { margin-bottom: 0; }
     .ios-step-num {
-      width: 28px; height: 28px; background: var(--sky);
-      border: 2px solid var(--black); border-radius: 50%;
+      width: 24px; height: 24px; background: #FF6B00;
+      border: 2px solid #CC5200; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: 0.82rem; flex-shrink: 0;
+      font-weight: 900; font-size: 0.78rem; flex-shrink: 0; color: #fff;
+    }
+    .ios-step-num.sub {
+      background: var(--gray); border-color: #999;
     }
     .ios-step-text { flex: 1; }
-    .ios-step-text strong { display: block; font-size: 0.86rem; }
-    .ios-step-text .en    { font-size: 0.73rem; color: var(--gray); }
-    .ios-step-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .ios-step-text strong { display: block; font-size: 0.84rem; }
+    .ios-step-text .en    { font-size: 0.7rem; color: var(--gray); }
+    .ios-step-icon { font-size: 1.3rem; flex-shrink: 0; }
     .btn-ios-close {
       width: 100%; padding: 13px; background: var(--black); color: #fff;
       border: 2px solid var(--black); border-radius: 10px;
       font-size: 0.9rem; font-weight: 700; font-family: inherit;
-      cursor: pointer; margin-top: 8px;
+      cursor: pointer; margin-top: 4px;
     }
 
     /* ── 極小スクリーン ── */
@@ -557,36 +586,67 @@
     <button class="btn-banner-dismiss" id="btn-banner-dismiss" aria-label="閉じる">✕</button>
   </div>
 
-  <!-- iOS モーダル -->
+  <!-- インストールガイドモーダル -->
   <div class="ios-overlay" id="ios-overlay">
     <div class="ios-modal">
-      <h3>ホーム画面へ追加
+      <h3>ホーム画面に追加する
         <span class="en">Add to Home Screen</span>
       </h3>
-      <div class="ios-step">
-        <div class="ios-step-num">1</div>
-        <div class="ios-step-text">
-          <strong>Safari の共有ボタンをタップ</strong>
-          <span class="en">Tap the Share button in Safari</span>
+
+      <!-- Chrome（メイン） -->
+      <div class="modal-section-chrome">
+        <div class="modal-section-label">
+          🌐 Chrome <span class="badge">メイン / Primary</span>
         </div>
-        <span class="ios-step-icon">⎙</span>
-      </div>
-      <div class="ios-step">
-        <div class="ios-step-num">2</div>
-        <div class="ios-step-text">
-          <strong>「ホーム画面に追加」を選ぶ</strong>
-          <span class="en">Select "Add to Home Screen"</span>
+        <div class="ios-step">
+          <div class="ios-step-num">1</div>
+          <div class="ios-step-text">
+            <strong>Chrome のメニュー（⋮）をタップ</strong>
+            <span class="en">Tap the Chrome menu (⋮) at top-right</span>
+          </div>
+          <span class="ios-step-icon">⋮</span>
         </div>
-        <span class="ios-step-icon">＋</span>
-      </div>
-      <div class="ios-step">
-        <div class="ios-step-num">3</div>
-        <div class="ios-step-text">
-          <strong>「追加」をタップして完了</strong>
-          <span class="en">Tap "Add" to finish</span>
+        <div class="ios-step">
+          <div class="ios-step-num">2</div>
+          <div class="ios-step-text">
+            <strong>「ホーム画面に追加」を選ぶ</strong>
+            <span class="en">Select "Add to Home Screen"</span>
+          </div>
+          <span class="ios-step-icon">＋</span>
         </div>
-        <span class="ios-step-icon">✅</span>
+        <div class="ios-step">
+          <div class="ios-step-num">3</div>
+          <div class="ios-step-text">
+            <strong>「追加」をタップして完了！</strong>
+            <span class="en">Tap "Add" — done!</span>
+          </div>
+          <span class="ios-step-icon">✅</span>
+        </div>
       </div>
+
+      <!-- Safari（サブ） -->
+      <div class="modal-section-safari">
+        <div class="modal-section-label">
+          🧭 Safari <span class="badge-sub">サブ / Alternative</span>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num sub">1</div>
+          <div class="ios-step-text">
+            <strong>Safari の共有ボタンをタップ</strong>
+            <span class="en">Tap the Share button (⬆️) in Safari</span>
+          </div>
+          <span class="ios-step-icon" style="font-size:1rem;">⬆️</span>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num sub">2</div>
+          <div class="ios-step-text">
+            <strong>「ホーム画面に追加」→「追加」</strong>
+            <span class="en">Select "Add to Home Screen" → "Add"</span>
+          </div>
+          <span class="ios-step-icon" style="font-size:1rem;">＋</span>
+        </div>
+      </div>
+
       <button class="btn-ios-close" onclick="closeIOSModal()">閉じる / Close</button>
     </div>
   </div>
