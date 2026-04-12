@@ -8,277 +8,78 @@
   <meta name="theme-color" content="#3A9B3A" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
-    :root {
-      --sky:    #7ECEF4;
-      --accent: #3A9B3A;
-      --accent-dark: #2E7D2E;
-      --yellow: #FFD93D;
-      --green:  #3BB273;
-      --black:  #1A1A1A;
-      --white:  #FFFFFF;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
-      background: var(--sky);
-      color: var(--black);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 16px 48px;
-    }
-    .site-logo {
-      font-size: 1.05rem;
-      font-weight: 900;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--white);
-      border: 2.5px solid var(--black);
-      border-radius: 30px;
-      padding: 6px 20px 6px 10px;
-      box-shadow: 3px 3px 0 var(--black);
-      margin-bottom: 24px;
-    }
-    .site-logo .dot {
-      width: 28px; height: 28px;
-      background: var(--accent);
-      border-radius: 50%;
-      border: 2px solid var(--black);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem;
-    }
-    .main-card {
-      width: 100%;
-      max-width: 520px;
-      background: var(--white);
-      border: 2.5px solid var(--black);
-      border-radius: 14px;
-      box-shadow: 5px 5px 0 var(--black);
-      overflow: hidden;
-    }
-    .card-top {
-      background: var(--accent);
-      padding: 24px 28px 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .card-top::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1.5px, transparent 1.5px);
-      background-size: 14px 14px;
-    }
-    .card-top-inner { position: relative; z-index: 1; }
-    .top-icon {
-      width: 52px; height: 52px;
-      background: var(--yellow);
-      border: 2.5px solid #fff;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-      box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
-      margin-bottom: 12px;
-    }
-    .card-top h1 {
-      font-size: 1.5rem; font-weight: 900;
-      color: #fff; margin-bottom: 6px;
-      text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
-    }
-    .card-top p { font-size: 0.88rem; color: rgba(255,255,255,0.9); }
-    .card-body { padding: 28px; }
-    .field-label {
-      font-weight: 700; font-size: 0.9rem;
-      margin-bottom: 7px;
-      display: flex; align-items: center; gap: 7px;
-    }
-    .label-icon {
-      width: 22px; height: 22px;
-      background: var(--sky);
-      border: 1.5px solid var(--black);
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem;
-    }
-    .tag-required { font-size: 0.7rem; font-weight: 700; background: #FF4D4D; color: #fff; border-radius: 4px; padding: 1px 6px; }
-    .form-input {
-      width: 100%; padding: 11px 14px;
-      border: 2px solid #CCC; border-radius: 10px;
-      font-size: 0.95rem; font-family: inherit;
-      background: #FAFAFA; outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .form-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(58,155,58,0.15);
-      background: #fff;
-    }
-    .otp-input {
-      letter-spacing: 0.3em;
-      font-size: 1.4rem;
-      font-weight: 700;
-      text-align: center;
-    }
-    .btn-primary {
-      width: 100%; padding: 14px;
-      background: var(--accent); color: #fff;
-      border: 2.5px solid var(--black);
-      border-radius: 10px;
-      font-size: 1.05rem; font-weight: 900; font-family: inherit;
-      cursor: pointer;
-      box-shadow: 3px 3px 0 var(--black);
-      transition: transform 0.1s, box-shadow 0.1s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .btn-primary:hover  { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--black); }
-    .btn-primary:active { transform: translate(2px,2px);   box-shadow: 1px 1px 0 var(--black); }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: 3px 3px 0 var(--black); }
-    .btn-secondary {
-      width: 100%; padding: 12px;
-      background: #fff; color: var(--black);
-      border: 2px solid var(--black);
-      border-radius: 10px;
-      font-size: 0.95rem; font-weight: 700; font-family: inherit;
-      cursor: pointer;
-      box-shadow: 2px 2px 0 var(--black);
-      transition: transform 0.1s, box-shadow 0.1s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      margin-top: 10px;
-    }
-    .btn-secondary:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); }
-    .step-indicator {
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px; margin-bottom: 24px;
-    }
-    .step-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: #DDD;
-      border: 2px solid var(--black);
-      transition: background 0.2s;
-    }
-    .step-dot.active { background: var(--accent); }
-    .step-dot.done   { background: var(--green); }
-    .step-line { width: 40px; height: 2px; background: #DDD; }
-    .divider { border: none; border-top: 2px dashed #DDD; margin: 24px 0; }
-    .steps-title { font-size: 0.78rem; font-weight: 700; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
-    .step-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
-    .step-num {
-      width: 30px; height: 30px;
-      background: var(--yellow); border: 2px solid var(--black);
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: 0.9rem; flex-shrink: 0;
-      box-shadow: 2px 2px 0 var(--black);
-    }
-    .step-text strong { display: block; font-size: 0.88rem; font-weight: 700; }
-    .step-text span   { font-size: 0.82rem; color: #666; }
-    .error-box {
-      background: #FFEBEE; border: 2px solid #E53935;
-      border-radius: 10px; padding: 12px 16px;
-      font-size: 0.88rem; font-weight: 700; color: #C62828;
-      margin-bottom: 20px; display: none;
-    }
-    .loading-box { text-align: center; padding: 20px 0; display: none; }
-    .spinner {
-      width: 40px; height: 40px;
-      border: 4px solid #E0E0E0;
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 12px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .otp-sent-msg {
-      background: #E8F5E9; border: 2px solid var(--accent);
-      border-radius: 10px; padding: 12px 16px;
-      font-size: 0.88rem; font-weight: 700; color: var(--accent-dark);
-      margin-bottom: 20px; display: none;
-    }
-    .success-view { display: none; }
-    .success-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--green); color: #fff;
-      border: 2.5px solid var(--black);
-      border-radius: 30px; padding: 6px 18px;
-      font-weight: 900; font-size: 0.92rem;
-      box-shadow: 2px 2px 0 var(--black);
-      margin-bottom: 20px;
-    }
-    .qr-result-box {
-      background: var(--sky);
-      border: 2.5px solid var(--black);
-      border-radius: 12px; padding: 24px;
-      text-align: center; margin-bottom: 20px;
-      box-shadow: 3px 3px 0 rgba(0,0,0,0.08);
-    }
-    .user-name-label { font-size: 0.88rem; font-weight: 700; color: #444; margin-bottom: 14px; }
-    .user-name-label strong { color: var(--accent-dark); }
-    #qr-canvas { display: flex; justify-content: center; margin-bottom: 14px; }
-    #qr-canvas canvas, #qr-canvas img {
-      border-radius: 8px;
-      border: 3px solid var(--black);
-      box-shadow: 3px 3px 0 var(--black);
-    }
-    .btn-download {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--yellow); color: var(--black);
-      border: 2.5px solid var(--black);
-      border-radius: 8px; padding: 9px 20px;
-      font-size: 0.88rem; font-weight: 700; font-family: inherit;
-      cursor: pointer; text-decoration: none;
-      box-shadow: 2px 2px 0 var(--black);
-      transition: transform 0.1s, box-shadow 0.1s;
-    }
-    .btn-download:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); color: var(--black); }
-    .token-label { font-size: 0.75rem; font-weight: 700; color: #888; margin: 16px 0 4px; }
-    .token-box {
-      background: #1A1A1A; color: #FFD93D;
-      font-family: 'Courier New', monospace; font-size: 0.8rem;
-      border-radius: 8px; padding: 10px 14px;
-      word-break: break-all; text-align: left;
-      border: 2px solid #333;
-    }
-    .info-box {
-      background: #fff; border: 2px solid var(--black);
-      border-radius: 10px; padding: 12px 16px;
-      font-size: 0.85rem;
-      display: flex; gap: 10px; align-items: flex-start;
-      margin-bottom: 20px;
-    }
-    .info-icon {
-      width: 24px; height: 24px;
-      background: var(--sky); border: 2px solid var(--black);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; flex-shrink: 0;
-    }
-    .btn-back {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #fff; color: var(--black);
-      border: 2px solid var(--black);
-      border-radius: 8px; padding: 9px 20px;
-      font-size: 0.88rem; font-weight: 700; font-family: inherit;
-      cursor: pointer;
-      box-shadow: 2px 2px 0 var(--black);
-      transition: transform 0.1s, box-shadow 0.1s;
-    }
-    .btn-back:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); }
-    .footer-note { text-align: center; font-size: 0.78rem; color: rgba(0,0,0,0.45); margin-top: 20px; }
-    .otp-timer { font-size: 0.8rem; color: #888; text-align: center; margin-top: 8px; }
-    .otp-timer.expiring { color: #E53935; font-weight: 700; }
+    :root{--sky:#7ECEF4;--accent:#3A9B3A;--accent-dark:#2E7D2E;--yellow:#FFD93D;--green:#3BB273;--black:#1A1A1A;--white:#FFFFFF;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--sky);color:var(--black);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px 48px;}
+    .site-logo{font-size:1.05rem;font-weight:900;display:inline-flex;align-items:center;gap:8px;background:var(--white);border:2.5px solid var(--black);border-radius:30px;padding:6px 20px 6px 10px;box-shadow:3px 3px 0 var(--black);margin-bottom:24px;}
+    .site-logo .dot{width:28px;height:28px;background:var(--accent);border-radius:50%;border:2px solid var(--black);display:flex;align-items:center;justify-content:center;font-size:0.85rem;}
+    .main-card{width:100%;max-width:520px;background:var(--white);border:2.5px solid var(--black);border-radius:14px;box-shadow:5px 5px 0 var(--black);overflow:hidden;}
+    .card-top{background:var(--accent);padding:24px 28px 20px;position:relative;overflow:hidden;}
+    .card-top::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.3) 1.5px,transparent 1.5px);background-size:14px 14px;}
+    .card-top-inner{position:relative;z-index:1;}
+    .top-icon{width:52px;height:52px;background:var(--yellow);border:2.5px solid #fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:2px 2px 0 rgba(0,0,0,0.15);margin-bottom:12px;}
+    .card-top h1{font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:6px;text-shadow:2px 2px 0 rgba(0,0,0,0.15);}
+    .card-top p{font-size:0.88rem;color:rgba(255,255,255,0.9);}
+    .card-body{padding:28px;}
+    .field-label{font-weight:700;font-size:0.9rem;margin-bottom:7px;display:flex;align-items:center;gap:7px;}
+    .label-icon{width:22px;height:22px;background:var(--sky);border:1.5px solid var(--black);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;}
+    .tag-required{font-size:0.7rem;font-weight:700;background:#FF4D4D;color:#fff;border-radius:4px;padding:1px 6px;}
+    .form-input{width:100%;padding:11px 14px;border:2px solid #CCC;border-radius:10px;font-size:0.95rem;font-family:inherit;background:#FAFAFA;outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
+    .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(58,155,58,0.15);background:#fff;}
+    .otp-input{letter-spacing:0.3em;font-size:1.4rem;font-weight:700;text-align:center;}
+    .btn-primary{width:100%;padding:14px;background:var(--accent);color:#fff;border:2.5px solid var(--black);border-radius:10px;font-size:1.05rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:3px 3px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .btn-primary:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--black);}
+    .btn-primary:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black);}
+    .btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+    .btn-secondary{width:100%;padding:12px;background:#fff;color:var(--black);border:2px solid var(--black);border-radius:10px;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:2px 2px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;}
+    .btn-secondary:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--black);}
+    .step-indicator{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px;}
+    .step-dot{width:10px;height:10px;border-radius:50%;background:#DDD;border:2px solid var(--black);transition:background 0.2s;}
+    .step-dot.active{background:var(--accent);}
+    .step-dot.done{background:var(--green);}
+    .step-line{width:40px;height:2px;background:#DDD;}
+    .divider{border:none;border-top:2px dashed #DDD;margin:24px 0;}
+    .steps-title{font-size:0.78rem;font-weight:700;color:#888;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;}
+    .step-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+    .step-num{width:30px;height:30px;background:var(--yellow);border:2px solid var(--black);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;flex-shrink:0;box-shadow:2px 2px 0 var(--black);}
+    .step-text strong{display:block;font-size:0.88rem;font-weight:700;}
+    .step-text span{font-size:0.82rem;color:#666;}
+    .error-box{background:#FFEBEE;border:2px solid #E53935;border-radius:10px;padding:12px 16px;font-size:0.88rem;font-weight:700;color:#C62828;margin-bottom:20px;display:none;}
+    .loading-box{text-align:center;padding:20px 0;display:none;}
+    .spinner{width:40px;height:40px;border:4px solid #E0E0E0;border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .otp-sent-msg{background:#E8F5E9;border:2px solid var(--accent);border-radius:10px;padding:12px 16px;font-size:0.88rem;font-weight:700;color:var(--accent-dark);margin-bottom:20px;display:none;}
+    .otp-timer{font-size:0.8rem;color:#888;text-align:center;margin-top:8px;}
+    .otp-timer.expiring{color:#E53935;font-weight:700;}
+    .success-view{display:none;}
+    .success-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#fff;border:2.5px solid var(--black);border-radius:30px;padding:6px 18px;font-weight:900;font-size:0.92rem;box-shadow:2px 2px 0 var(--black);margin-bottom:20px;}
+    .qr-result-box{background:var(--sky);border:2.5px solid var(--black);border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;box-shadow:3px 3px 0 rgba(0,0,0,0.08);}
+    .qr-card-header{font-size:0.82rem;font-weight:700;color:#555;margin-bottom:6px;}
+    .qr-card-title{font-size:1.1rem;font-weight:900;color:var(--accent-dark);margin-bottom:16px;}
+    #qr-canvas{display:flex;justify-content:center;margin-bottom:14px;}
+    #qr-canvas canvas,#qr-canvas img{border-radius:8px;border:3px solid var(--black);box-shadow:3px 3px 0 var(--black);}
+    .qr-card-footer{font-size:0.72rem;color:#777;margin-top:10px;}
+    .action-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+    .btn-save{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--yellow);color:var(--black);border:2.5px solid var(--black);border-radius:10px;padding:13px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:3px 3px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;}
+    .btn-save:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--black);}
+    .btn-home{display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:var(--black);border:2px solid var(--black);border-radius:10px;padding:13px;font-size:1rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:2px 2px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;}
+    .btn-home:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--black);}
+    .token-label{font-size:0.75rem;font-weight:700;color:#888;margin:12px 0 4px;}
+    .token-box{background:#1A1A1A;color:#FFD93D;font-family:'Courier New',monospace;font-size:0.75rem;border-radius:8px;padding:10px 14px;word-break:break-all;text-align:left;border:2px solid #333;margin-bottom:16px;}
+    .info-box{background:#fff;border:2px solid var(--black);border-radius:10px;padding:12px 16px;font-size:0.85rem;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px;}
+    .info-icon{width:24px;height:24px;background:var(--sky);border:2px solid var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;}
+    .home-guide{background:#FFF8E1;border:2px solid #F9A825;border-radius:10px;padding:14px 16px;font-size:0.84rem;margin-bottom:16px;display:none;}
+    .home-guide strong{display:block;margin-bottom:6px;font-size:0.9rem;}
+    .home-guide ol{padding-left:18px;line-height:1.8;}
+    .btn-back{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--black);border:2px solid var(--black);border-radius:8px;padding:9px 20px;font-size:0.88rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:2px 2px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;}
+    .btn-back:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--black);}
+    .footer-note{text-align:center;font-size:0.78rem;color:rgba(0,0,0,0.45);margin-top:20px;}
   </style>
 </head>
 <body>
-
-  <div class="site-logo">
-    <span class="dot">&#x1F511;</span>
-    <span>出町ガジェット / QR解錠キー</span>
-  </div>
-
+  <div class="site-logo"><span class="dot">&#x1F511;</span><span>出町ガジェット / QR解錠キー</span></div>
   <div class="main-card">
     <div class="card-top">
       <div class="card-top-inner">
@@ -287,314 +88,148 @@
         <p id="header-sub">メール認証を経て、あなた専用のQRコードキーを発行します。</p>
       </div>
     </div>
-
     <div class="card-body">
       <div class="error-box" id="error-box">&#x26A0;&#xFE0F; <span id="error-msg"></span></div>
-      <div class="loading-box" id="loading-box">
-        <div class="spinner"></div>
-        <div id="loading-msg" style="font-size:0.9rem; color:#666; font-weight:700;">処理中...</div>
-      </div>
-
+      <div class="loading-box" id="loading-box"><div class="spinner"></div><div id="loading-msg" style="font-size:0.9rem;color:#666;font-weight:700;">処理中...</div></div>
       <!-- STEP 1 -->
       <div id="step1-view">
-        <div class="step-indicator">
-          <div class="step-dot active"></div>
-          <div class="step-line"></div>
-          <div class="step-dot"></div>
-          <div class="step-line"></div>
-          <div class="step-dot"></div>
-        </div>
+        <div class="step-indicator"><div class="step-dot active"></div><div class="step-line"></div><div class="step-dot"></div><div class="step-line"></div><div class="step-dot"></div></div>
         <form id="step1-form">
-          <div style="margin-bottom:18px;">
-            <div class="field-label">
-              <span class="label-icon">&#x1F464;</span>
-              お名前
-              <span class="tag-required">必須</span>
-            </div>
-            <input type="text" class="form-input" id="input-name"
-                   placeholder="例：山田 太郎" required maxlength="64" autocomplete="name" />
-          </div>
-          <div style="margin-bottom:24px;">
-            <div class="field-label">
-              <span class="label-icon">&#x2709;&#xFE0F;</span>
-              メールアドレス
-              <span class="tag-required">必須</span>
-            </div>
-            <input type="email" class="form-input" id="input-email"
-                   placeholder="例：taro@gmail.com" required maxlength="128" autocomplete="email" />
-          </div>
-          <button type="submit" class="btn-primary" id="send-otp-btn">
-            <span style="font-size:1.2rem;">&#x1F4E8;</span>
-            認証コードをメールで送信
-          </button>
+          <div style="margin-bottom:18px;"><div class="field-label"><span class="label-icon">&#x1F464;</span>お名前<span class="tag-required">必須</span></div><input type="text" class="form-input" id="input-name" placeholder="例：山田 太郎" required maxlength="64" autocomplete="name" /></div>
+          <div style="margin-bottom:24px;"><div class="field-label"><span class="label-icon">&#x2709;&#xFE0F;</span>メールアドレス<span class="tag-required">必須</span></div><input type="email" class="form-input" id="input-email" placeholder="例：taro@gmail.com" required maxlength="128" autocomplete="email" /></div>
+          <button type="submit" class="btn-primary"><span style="font-size:1.2rem;">&#x1F4E8;</span>認証コードをメールで送信</button>
         </form>
         <hr class="divider" />
         <div class="steps-title">&#x1F4D6; 発行の流れ</div>
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div class="step-text">
-            <strong>名前とメールを入力</strong>
-            <span>認証コードをメールに送ります。</span>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div class="step-text">
-            <strong>認証コードを入力</strong>
-            <span>メールに届いた6桁のコードを入力してください。</span>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          <div class="step-text">
-            <strong>QRコードを保存・印刷</strong>
-            <span>発行されたQRコードをスキャナーにかざして解錠できます。</span>
-          </div>
-        </div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>名前とメールを入力</strong><span>認証コードをメールに送ります。</span></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>認証コードを入力</strong><span>メールに届いた6桁のコードを入力してください。</span></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>QRコードを保存</strong><span>画像保存またはホーム画面に追加して使えます。</span></div></div>
       </div>
-
       <!-- STEP 2 -->
       <div id="step2-view" style="display:none;">
-        <div class="step-indicator">
-          <div class="step-dot done"></div>
-          <div class="step-line"></div>
-          <div class="step-dot active"></div>
-          <div class="step-line"></div>
-          <div class="step-dot"></div>
-        </div>
-        <div class="otp-sent-msg" id="otp-sent-msg">
-          &#x2705; <span id="otp-sent-email"></span> に認証コードを送信しました。
-        </div>
+        <div class="step-indicator"><div class="step-dot done"></div><div class="step-line"></div><div class="step-dot active"></div><div class="step-line"></div><div class="step-dot"></div></div>
+        <div class="otp-sent-msg" id="otp-sent-msg">&#x2705; <span id="otp-sent-email"></span> に認証コードを送信しました。</div>
         <form id="step2-form">
-          <div style="margin-bottom:24px;">
-            <div class="field-label">
-              <span class="label-icon">&#x1F522;</span>
-              認証コード（6桁）
-              <span class="tag-required">必須</span>
-            </div>
-            <input type="text" class="form-input otp-input" id="input-otp"
-                   placeholder="123456" required maxlength="6"
-                   inputmode="numeric" pattern="[0-9]{6}"
-                   autocomplete="one-time-code" />
-            <div class="otp-timer" id="otp-timer">有効期限：5:00</div>
-          </div>
-          <button type="submit" class="btn-primary" id="verify-otp-btn">
-            <span style="font-size:1.2rem;">&#x2705;</span>
-            認証してQRキーを発行する
-          </button>
-          <button type="button" class="btn-secondary" id="resend-btn">
-            &#x1F504; コードを再送する
-          </button>
+          <div style="margin-bottom:24px;"><div class="field-label"><span class="label-icon">&#x1F522;</span>認証コード（6桁）<span class="tag-required">必須</span></div><input type="text" class="form-input otp-input" id="input-otp" placeholder="123456" required maxlength="6" inputmode="numeric" pattern="[0-9]{6}" autocomplete="one-time-code" /><div class="otp-timer" id="otp-timer">有効期限：5:00</div></div>
+          <button type="submit" class="btn-primary"><span style="font-size:1.2rem;">&#x2705;</span>認証してQRキーを発行する</button>
+          <button type="button" class="btn-secondary" id="resend-btn">&#x1F504; コードを再送する</button>
         </form>
       </div>
-
       <!-- STEP 3 -->
       <div class="success-view" id="success-view">
-        <div style="text-align:center;">
-          <div class="success-badge">&#x2705; 発行完了！</div>
-        </div>
-        <div class="qr-result-box">
-          <div class="user-name-label">
-            <strong id="result-name"></strong> さんのQRコードキー
-          </div>
+        <div style="text-align:center;"><div class="success-badge">&#x2705; 発行完了！</div></div>
+        <div class="qr-result-box" id="qr-card">
+          <div class="qr-card-header">出町ガジェット｜QR解錠キー</div>
+          <div class="qr-card-title" id="result-name-card"></div>
           <div id="qr-canvas"></div>
-          <button class="btn-download" id="btn-download">
-            &#x2B07;&#xFE0F; QRコードをダウンロード
-          </button>
-          <div class="token-label">トークン（控え用）</div>
-          <div class="token-box" id="result-token"></div>
+          <div class="qr-card-footer">このQRをドアのスキャナーにかざして解錠</div>
         </div>
-        <div class="info-box">
-          <div class="info-icon">&#x2139;&#xFE0F;</div>
-          <div>このQRコードをスマホに保存するか印刷して、ドアのスキャナーにかざしてください。</div>
+        <div class="action-btns">
+          <button class="btn-save" id="btn-save-image">&#x1F4F8; カード画像を保存する</button>
+          <button class="btn-home" id="btn-add-home">&#x1F4F1; ホーム画面に追加する</button>
         </div>
-        <div style="text-align:center;">
-          <button class="btn-back" onclick="resetForm()">
-            &#x2795; 別のキーを発行する
-          </button>
+        <div class="home-guide" id="home-guide">
+          <strong id="home-guide-title">&#x1F4F1; ホーム画面への追加方法</strong>
+          <ol id="home-guide-steps"></ol>
         </div>
+        <div class="token-label">トークン（控え用）</div>
+        <div class="token-box" id="result-token"></div>
+        <div class="info-box"><div class="info-icon">&#x2139;&#xFE0F;</div><div>QRコードをホーム画面に追加すると、アプリのように素早く開けます。画像保存も可能です。</div></div>
+        <div style="text-align:center;"><button class="btn-back" onclick="resetForm()">&#x2795; 別のキーを発行する</button></div>
       </div>
     </div>
   </div>
-
-  <div class="footer-note">
-    &#x1F512; QRコードはUUIDで生成されており、推測・複製は不可能です。
-  </div>
-
+  <div class="footer-note">&#x1F512; QRコードはUUIDで生成されており、推測・複製は不可能です。</div>
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrVbMUv1fmii-4NqQoRjrZV6uaMTmQECMk3yaMrCLYzdq6M0vSUBzzz8My9Yog9bdU/exec";
-
-    let state = { name: '', email: '', token: '' };
-    let otpTimerInterval = null;
-
-    function generateUUID() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0;
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-      });
+    let state={name:'',email:'',token:''}, otpTimerInterval=null, deferredInstallPrompt=null;
+    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;});
+    function generateUUID(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);});}
+    function show(id){document.getElementById(id).style.display='block';}
+    function hide(id){document.getElementById(id).style.display='none';}
+    function showFlex(id){document.getElementById(id).style.display='flex';}
+    function showError(msg){document.getElementById('error-msg').textContent=msg;showFlex('error-box');}
+    function hideError(){hide('error-box');}
+    function showLoading(msg){document.getElementById('loading-msg').textContent=msg||'処理中...';show('loading-box');}
+    function hideLoading(){hide('loading-box');}
+    function startOtpTimer(){
+      clearInterval(otpTimerInterval);let seconds=5*60;const t=document.getElementById('otp-timer');
+      function u(){const m=Math.floor(seconds/60),s=seconds%60;t.textContent='有効期限：'+m+':'+String(s).padStart(2,'0');t.className='otp-timer'+(seconds<=60?' expiring':'');if(seconds<=0){clearInterval(otpTimerInterval);t.textContent='有効期限が切れました。再送してください。';}seconds--;}
+      u();otpTimerInterval=setInterval(u,1000);
     }
-
-    function show(id) { document.getElementById(id).style.display = 'block'; }
-    function hide(id) { document.getElementById(id).style.display = 'none'; }
-    function showFlex(id) { document.getElementById(id).style.display = 'flex'; }
-    function showError(msg) {
-      document.getElementById('error-msg').textContent = msg;
-      showFlex('error-box');
+    function buildQR(token){const el=document.getElementById('qr-canvas');el.innerHTML='';new QRCode(el,{text:token,width:200,height:200,colorDark:'#1A1A1A',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
+    function saveToHash(name,token){history.replaceState(null,'','#t='+encodeURIComponent(token)+'&n='+encodeURIComponent(name));}
+    function loadFromHash(){const hash=location.hash.slice(1);if(!hash)return null;const p={};hash.split('&').forEach(s=>{const[k,v]=s.split('=');p[k]=decodeURIComponent(v||'');});return(p.t&&p.n)?{token:p.t,name:p.n}:null;}
+    function showQR(name,token){
+      show('success-view');
+      document.getElementById('result-name-card').textContent=name+' さんのQRコードキー';
+      document.getElementById('result-token').textContent=token;
+      document.getElementById('header-icon').textContent='✅';
+      document.getElementById('header-title').textContent='発行完了！';
+      document.getElementById('header-sub').textContent='QRコードキーを発行しました。保存してください。';
+      setTimeout(()=>buildQR(token),100);
+      saveToHash(name,token);
     }
-    function hideError() { hide('error-box'); }
-    function showLoading(msg) {
-      document.getElementById('loading-msg').textContent = msg || '処理中...';
-      show('loading-box');
-    }
-    function hideLoading() { hide('loading-box'); }
-
-    function startOtpTimer() {
-      clearInterval(otpTimerInterval);
-      let seconds = 5 * 60;
-      const timerEl = document.getElementById('otp-timer');
-      function update() {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        timerEl.textContent = '有効期限：' + m + ':' + String(s).padStart(2, '0');
-        timerEl.className = 'otp-timer' + (seconds <= 60 ? ' expiring' : '');
-        if (seconds <= 0) {
-          clearInterval(otpTimerInterval);
-          timerEl.textContent = '有効期限が切れました。再送してください。';
-          timerEl.className = 'otp-timer expiring';
+    document.getElementById('btn-save-image').addEventListener('click',async()=>{
+      const card=document.getElementById('qr-card');
+      try{
+        const canvas=await html2canvas(card,{scale:2,backgroundColor:'#7ECEF4',useCORS:true});
+        const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
+        const filename=(state.name||'qrkey')+'_QR解錠キー.png';
+        if(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File([blob],filename,{type:'image/png'})]})){
+          await navigator.share({files:[new File([blob],filename,{type:'image/png'})],title:'QR解錠キー',text:state.name+'さんのQR解錠キー'});
+        }else{
+          const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
         }
-        seconds--;
-      }
-      update();
-      otpTimerInterval = setInterval(update, 1000);
-    }
-
-    function buildQR(token) {
-      const el = document.getElementById('qr-canvas');
-      el.innerHTML = '';
-      new QRCode(el, {
-        text: token,
-        width: 200, height: 200,
-        colorDark: '#1A1A1A', colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }
-
-    document.getElementById('btn-download').addEventListener('click', () => {
-      const canvas = document.querySelector('#qr-canvas canvas');
-      if (!canvas) return;
-      const name = document.getElementById('result-name').textContent || 'user';
-      const a = document.createElement('a');
-      a.download = name + '_qrkey.png';
-      a.href = canvas.toDataURL('image/png');
-      a.click();
+      }catch(err){if(err.name!=='AbortError')alert('画像の保存に失敗しました: '+err.message);}
     });
-
-    document.getElementById('step1-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      hideError();
-      const name  = document.getElementById('input-name').value.trim();
-      const email = document.getElementById('input-email').value.trim();
-      if (!name || !email) return;
-      state.name  = name;
-      state.email = email;
-      hide('step1-view');
-      showLoading('認証コードを送信中...');
-      try {
-        const url = APPS_SCRIPT_URL + '?action=sendOTP&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email);
-        const res  = await fetch(url);
-        const data = await res.json();
-        if (data.result !== 'ok') throw new Error(data.message || '送信に失敗しました');
-        hideLoading();
-        show('step2-view');
-        document.getElementById('otp-sent-email').textContent = email;
-        document.getElementById('otp-sent-msg').style.display = 'flex';
-        startOtpTimer();
-      } catch (err) {
-        hideLoading();
-        show('step1-view');
-        showError(err.message);
+    document.getElementById('btn-add-home').addEventListener('click',async()=>{
+      const guide=document.getElementById('home-guide');
+      if(deferredInstallPrompt){await deferredInstallPrompt.prompt();const{outcome}=await deferredInstallPrompt.userChoice;if(outcome==='accepted')deferredInstallPrompt=null;return;}
+      const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isSafari=/safari/i.test(navigator.userAgent)&&!/chrome|crios|fxios/i.test(navigator.userAgent);
+      const title=document.getElementById('home-guide-title');
+      const steps=document.getElementById('home-guide-steps');
+      if(isIOS&&isSafari){
+        title.textContent='&#x1F4F1; Safari でホーム画面に追加する方法';
+        steps.innerHTML='<li>画面下部の <strong>共有ボタン（□↑）</strong> をタップ</li><li>「<strong>ホーム画面に追加</strong>」を選択</li><li>右上の「<strong>追加</strong>」をタップ</li>';
+      }else if(isIOS){
+        title.textContent='&#x1F4F1; iPhone でホーム画面に追加する方法';
+        steps.innerHTML='<li>このページを <strong>Safari で開き直し</strong>てください</li><li>共有ボタン（□↑）→「<strong>ホーム画面に追加</strong>」</li>';
+      }else{
+        title.textContent='&#x1F4F1; ホーム画面への追加方法';
+        steps.innerHTML='<li>ブラウザのメニュー（&#x22EE;）を開く</li><li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択</li>';
       }
+      guide.style.display=guide.style.display==='block'?'none':'block';
     });
-
-    document.getElementById('step2-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      hideError();
-      const otp = document.getElementById('input-otp').value.trim();
-      if (!otp || otp.length !== 6) {
-        showError('6桁の認証コードを入力してください。');
-        return;
-      }
-      const token = generateUUID();
-      state.token = token;
-      hide('step2-view');
-      showLoading('QRコードを登録中...');
-      try {
-        const url = APPS_SCRIPT_URL + '?action=register'
-          + '&name=' + encodeURIComponent(state.name)
-          + '&email=' + encodeURIComponent(state.email)
-          + '&token=' + encodeURIComponent(token)
-          + '&otp=' + encodeURIComponent(otp);
-        const res  = await fetch(url);
-        const data = await res.json();
-        if (data.result !== 'ok') throw new Error(data.message || '登録に失敗しました');
-        clearInterval(otpTimerInterval);
-        hideLoading();
-        show('success-view');
-        document.getElementById('result-name').textContent  = state.name;
-        document.getElementById('result-token').textContent = token;
-        document.getElementById('header-icon').textContent  = '✅';
-        document.getElementById('header-title').textContent = '発行完了！';
-        document.getElementById('header-sub').textContent   = 'QRコードキーを発行しました。保存してください。';
-        setTimeout(() => buildQR(token), 100);
-      } catch (err) {
-        hideLoading();
-        show('step2-view');
-        showError(err.message);
-      }
+    document.getElementById('step1-form').addEventListener('submit',async(e)=>{
+      e.preventDefault();hideError();
+      const name=document.getElementById('input-name').value.trim();
+      const email=document.getElementById('input-email').value.trim();
+      if(!name||!email)return;
+      state.name=name;state.email=email;
+      hide('step1-view');showLoading('認証コードを送信中...');
+      try{const res=await fetch(APPS_SCRIPT_URL+'?action=sendOTP&name='+encodeURIComponent(name)+'&email='+encodeURIComponent(email));const data=await res.json();if(data.result!=='ok')throw new Error(data.message||'送信に失敗しました');hideLoading();show('step2-view');document.getElementById('otp-sent-email').textContent=email;document.getElementById('otp-sent-msg').style.display='flex';startOtpTimer();}
+      catch(err){hideLoading();show('step1-view');showError(err.message);}
     });
-
-    document.getElementById('resend-btn').addEventListener('click', async () => {
-      hideError();
-      clearInterval(otpTimerInterval);
-      document.getElementById('input-otp').value = '';
-      hide('step2-view');
-      showLoading('認証コードを再送中...');
-      try {
-        const url = APPS_SCRIPT_URL + '?action=sendOTP&name=' + encodeURIComponent(state.name) + '&email=' + encodeURIComponent(state.email);
-        const res  = await fetch(url);
-        const data = await res.json();
-        if (data.result !== 'ok') throw new Error(data.message || '再送に失敗しました');
-        hideLoading();
-        show('step2-view');
-        document.getElementById('otp-sent-msg').style.display = 'flex';
-        startOtpTimer();
-      } catch (err) {
-        hideLoading();
-        show('step2-view');
-        showError(err.message);
-      }
+    document.getElementById('step2-form').addEventListener('submit',async(e)=>{
+      e.preventDefault();hideError();
+      const otp=document.getElementById('input-otp').value.trim();
+      if(!otp||otp.length!==6){showError('6桁の認証コードを入力してください。');return;}
+      const token=generateUUID();state.token=token;
+      hide('step2-view');showLoading('QRコードを登録中...');
+      try{const url=APPS_SCRIPT_URL+'?action=register&name='+encodeURIComponent(state.name)+'&email='+encodeURIComponent(state.email)+'&token='+encodeURIComponent(token)+'&otp='+encodeURIComponent(otp);const res=await fetch(url);const data=await res.json();if(data.result!=='ok')throw new Error(data.message||'登録に失敗しました');clearInterval(otpTimerInterval);hideLoading();showQR(state.name,token);}
+      catch(err){hideLoading();show('step2-view');showError(err.message);}
     });
-
-    function resetForm() {
-      clearInterval(otpTimerInterval);
-      state = { name: '', email: '', token: '' };
-      hide('success-view');
-      hide('step2-view');
-      hide('loading-box');
-      hideError();
-      show('step1-view');
-      document.getElementById('step1-form').reset();
-      document.getElementById('input-otp').value = '';
-      document.getElementById('otp-sent-msg').style.display = 'none';
-      document.getElementById('header-icon').textContent  = '📲';
-      document.getElementById('header-title').textContent = 'QR解錠キーを発行する';
-      document.getElementById('header-sub').textContent   = 'メール認証を経て、あなた専用のQRコードキーを発行します。';
-      document.getElementById('qr-canvas').innerHTML = '';
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
+    document.getElementById('resend-btn').addEventListener('click',async()=>{
+      hideError();clearInterval(otpTimerInterval);document.getElementById('input-otp').value='';
+      hide('step2-view');showLoading('認証コードを再送中...');
+      try{const res=await fetch(APPS_SCRIPT_URL+'?action=sendOTP&name='+encodeURIComponent(state.name)+'&email='+encodeURIComponent(state.email));const data=await res.json();if(data.result!=='ok')throw new Error(data.message||'再送に失敗しました');hideLoading();show('step2-view');document.getElementById('otp-sent-msg').style.display='flex';startOtpTimer();}
+      catch(err){hideLoading();show('step2-view');showError(err.message);}
+    });
+    function resetForm(){clearInterval(otpTimerInterval);state={name:'',email:'',token:''};history.replaceState(null,'',location.pathname);hide('success-view');hide('step2-view');hide('loading-box');hideError();show('step1-view');document.getElementById('step1-form').reset();document.getElementById('input-otp').value='';document.getElementById('otp-sent-msg').style.display='none';document.getElementById('home-guide').style.display='none';document.getElementById('header-icon').textContent='📲';document.getElementById('header-title').textContent='QR解錠キーを発行する';document.getElementById('header-sub').textContent='メール認証を経て、あなた専用のQRコードキーを発行します。';document.getElementById('qr-canvas').innerHTML='';}
+    (function(){const saved=loadFromHash();if(saved){state.name=saved.name;state.token=saved.token;showQR(saved.name,saved.token);}})();
+    if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
   </script>
 </body>
 </html>
