@@ -142,7 +142,7 @@
   </div>
   <div class="footer-note">&#x1F512; QRコードはUUIDで生成されており、推測・複製は不可能です。</div>
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrVbMUv1fmii-4NqQoRjrZV6uaMTmQECMk3yaMrCLYzdq6M0vSUBzzz8My9Yog9bdU/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZH1P3FjKjvCbM1N3MA5AAcFtP1tm-W1voSTb3nfEF6TQpjUBI4fDIn7koOqPai8j3Nw/exec";
     let state={name:'',email:'',token:''}, otpTimerInterval=null, deferredInstallPrompt=null;
     window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;});
     function generateUUID(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);});}
