@@ -162,6 +162,7 @@
     function saveToHash(name,token){history.replaceState(null,'','#t='+encodeURIComponent(token)+'&n='+encodeURIComponent(name));}
     function loadFromHash(){const hash=location.hash.slice(1);if(!hash)return null;const p={};hash.split('&').forEach(s=>{const[k,v]=s.split('=');p[k]=decodeURIComponent(v||'');});return(p.t&&p.n)?{token:p.t,name:p.n}:null;}
     function showQR(name,token){
+      hide('step1-view'); hide('step2-view'); hide('loading-box');
       show('success-view');
       document.getElementById('result-name-card').textContent=name+' さんのQRコードキー';
       document.getElementById('result-token').textContent=token;
