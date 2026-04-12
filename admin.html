@@ -450,7 +450,11 @@ async function tryLogin() {
       registrations = res.data || [];
       showAdminScreen();
     } else {
-      document.getElementById('loginError').style.display = 'block';
+      const _errEl = document.getElementById('loginError');
+      if (res.message && res.message.indexOf('不明なアクション') >= 0) {
+        _errEl.textContent = 'GASを再デプロイしてください（バージョンを新しくする）';
+      }
+      _errEl.style.display = 'block';
     }
   } catch (err) {
     showToast('通信エラーが発生しました', 'error');
