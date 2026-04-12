@@ -1,0 +1,15 @@
+{
+  "name": "QR解錠キー | 出町ガジェット",
+  "short_name": "QR解錠",
+  "description": "出町ガジェット のQR解錠キー専用アプリ",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#7ECEF4",
+  "theme_color": "#3A9B3A",
+  "start_url": "./qr.html",
+  "scope": "./",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
