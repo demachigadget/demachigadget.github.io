@@ -197,7 +197,7 @@
           closeBtn.onclick=()=>document.body.removeChild(overlay);
           overlay.append(img,msg,closeBtn);
           document.body.appendChild(overlay);
-        }}else{
+        }else{
           const url=URL.createObjectURL(blob);
           const a=document.createElement('a');
           a.href=url;a.download=filename;a.click();
