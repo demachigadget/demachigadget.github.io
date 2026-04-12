@@ -31,7 +31,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
-      background: var(--sky);
+  2   background: var(--sky);
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
@@ -52,7 +52,7 @@
     .logo-dot {
       width: 26px; height: 26px; background: var(--accent);
       border-radius: 50%; border: 2px solid var(--black);
-      display: flex; align-items: center; justify-content: center;
+   2  display: flex; align-items: center; justify-content: center;
       font-size: 0.85rem;
     }
 
@@ -91,8 +91,8 @@
       border: 2.5px solid var(--black); border-radius: 14px;
       padding: 15px; font-size: 1rem; font-weight: 900;
       box-shadow: 4px 4px 0 var(--black); cursor: pointer;
-      margin-top: 18px;
-      font-family: inherit;
+      margin-top: 18px; font-family: inherit;
+      display: flex; flex-direction: column; align-items: center; line-height: 1.3;
     }
     .btn-save:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--black); }
 
@@ -102,10 +102,12 @@
       border: 2.5px solid var(--black); border-radius: 14px;
       padding: 15px; font-size: 1rem; font-weight: 700;
       box-shadow: 4px 4px 0 var(--black); cursor: pointer;
-      margin-top: 10px;
-      font-family: inherit;
+      margin-top: 10px; font-family: inherit;
+      display: flex; flex-direction: column; align-items: center; line-height: 1.3;
     }
     .btn-home:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--black); }
+
+    .en { font-size: 0.8em; font-weight: 400; display: block; opacity: 0.82; margin-top: 2px; }
 
     /* ホーム追加ガイド */
     .guide-box {
@@ -128,7 +130,7 @@
       display: inline-block; background: var(--accent); color: white;
       border: none; border-radius: 6px; padding: 5px 12px;
       font-size: 0.78rem; font-weight: 700; cursor: pointer;
-      margin-top: 4px; font-family: inherit;
+ 2    margin-top: 4px; font-family: inherit;
     }
     .copy-done { background: #666; }
 
@@ -152,24 +154,24 @@
 
   <div class="logo">
     <div class="logo-dot">🔑</div>
-    出町ガジェット / QR解錠キー
+    出町ガジェット / Demachi Gadget
   </div>
 
-  <!-- QQビュー -->
+  <!-- QRビュー -->
   <div id="qr-view" style="display:none; width:100%; display:flex; flex-direction:column; align-items:center;">
 
     <div class="qr-card" id="qr-card">
-      <div class="qr-card-header">出町ガジェット｜QR解錠キー</div>
+      <div class="qr-card-header">出町ガジェット / Demachi Gadget<br><span style="font-size:0.9em;font-weight:400;">QRキー / QR Key</span></div>
       <div class="qr-card-name" id="qr-name"></div>
       <div id="qr-canvas"></div>
-      <div class="qr-card-footer">このQRをドアのスキャナーにかざして解錠</div>
+      <div class="qr-card-footer">ドアのスキャナーにかざして解錠<br>Hold up to the door scanner to unlock</div>
     </div>
 
-    <button class="btn-save" id="btn-save">📸 QRコードを画像保存する</button>
-    <button class="btn-home" id="btn-home">📱 ホーム画面に追加する</button>
+    <button class="btn-save" id="btn-save">📸 QRコードを画像保存する<span class="en">Save QR Code Image</span></button>
+    <button class="btn-home" id="btn-home">📱 ホーム画面に追加する<span class="en">Add to Home Screen</span></button>
 
     <div class="guide-box" id="guide-box">
-      <h3 id="guide-title"></h3>
+ �2   <h3 id="guide-title"></h3>
       <ol id="guide-steps"></ol>
     </div>
 
@@ -178,8 +180,8 @@
   <!-- エラービュー -->
   <div id="error-view" style="display:none;">
     <div class="error-box">
-      <p>⚠️ QRコードが見つかりません。<br>発行ページから再度お試しください。</p>
-      <a class="btn-back" href="./">発行ページへ</a>
+      <p>⚠️ QRコードが見つかりません。<br>発行ページから再度お試しください。<br><span style="font-size:0.88em;color:#888;">QR code not found. Please return to the issuance page.</span></p>
+      <a class="btn-back" href="./">発行ページへ / Back</a>
     </div>
   </div>
 
@@ -206,7 +208,7 @@
       document.getElementById('qr-view').style.display = 'flex';
 
       // 名前表示
-      document.getElementById('qr-name').textContent = name + ' さんのQRコードキー';
+      document.getElementById('qr-name').innerHTML = name + ' さんのQRキー<br><span style="font-size:0.82em;font-weight:400;color:#555;">Your personal QR key</span>';
 
       // QRコード生成
       const qrEl = document.getElementById('qr-canvas');
@@ -226,14 +228,14 @@
         const qrImg    = qrEl.querySelector('img');
         const qrSrc    = qrCanvas || qrImg;
 
-        if (!qrSrc) { alert('QRコードの読み込みが完了していません。少し待ってから再度お試しください。'); return; }
+        if (!qrSrc) { alert('QRコードの読み込みが完了していません。少し待ってから再度お試しください。\nQR code is still loading. Please wait and try again.'); return; }
 
         const isIOS    = /iphone|ipad|ipod/i.test(navigator.userAgent);
         const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
 
         // カード画像をCanvasで描画（html2canvas不要）
-        const W = 300, H = 360;
-        const oc  = document.createElement('canvas');
+        const W = 300, H = 410;
+   �2   const oc  = document.createElement('canvas');
         oc.width  = W;
         oc.height = H;
         const ctx = oc.getContext('2d');
@@ -242,45 +244,54 @@
         ctx.fillStyle = '#7ECEF4';
         ctx.fillRect(0, 0, W, H);
 
-        // 白いカード内枠
+        // 白いカードe��枠
         ctx.fillStyle = '#ffffff';
         roundRect(ctx, 12, 12, W-24, H-24, 12);
         ctx.fill();
 
         // ヘッダー
         ctx.fillStyle = '#2E7D2E';
-        ctx.font = 'bold 13px sans-serif';
+        ctx.font = 'bold 12px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('出町ガジェット｜QR解錠キー', W/2, 42);
+        ctx.fillText('出町ガジェット / Demachi Gadget', W/2, 40);
+        ctx.fillStyle = '#555';
+        ctx.font = '10px sans-serif';
+        ctx.fillText('QRキー / QR Key', W/2, 54);
 
         // 名前
         ctx.fillStyle = '#1A1A1A';
-        ctx.font = 'bold 16px sans-serif';
-        ctx.fillText(name + ' さんのQRコードキー', W/2, 68);
+        ctx.font = 'bold 15px sans-serif';
+        ctx.fillText(name + ' さんのQRキー', W/2, 72);
+        ctx.fillStyle = '#666';
+    �2  ctx.font = '11px sans-serif';
+        ctx.fillText('Your personal QR key', W/2, 86);
 
         // QR画像を描画
-        const qrSize = 200;
-        const qrX = (W - qrSize) / 2;
-        const qrY = 82;
+        const qrSize = 190;
+   �2   const qrX = (W - qrSize) / 2;
+        const qrY = 100;
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(qrX - 6, qrY - 6, qrSize + 12, qrSize + 12);
         ctx.drawImage(qrSrc, qrX, qrY, qrSize, qrSize);
 
         // フッター
-        ctx.fillStyle = '#555555';
-        ctx.font = '11px sans-serif';
-        ctx.fillText('このQRをドアのスキャナーにかざして解錠', W/2, qrY + qrSize + 26);
+        ctx.fillStyle = '#3A9B3A';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('ドアのスキャナーにかざして解錠', W/2, qrY + qrSize + 22);
+        ctx.fillStyle = '#777';
+   �2   ctx.font = '10px sans-serif';
+        ctx.fillText('Hold up to the door scanner to unlock', W/2, qrY + qrSize + 36);
 
         // ロゴ
         ctx.fillStyle = '#888888';
         ctx.font = '10px sans-serif';
-        ctx.fillText('出町ガジェット / demachigadget.github.io', W/2, H - 20);
+        ctx.fillText('demachigadget.github.io', W/2, H - 18);
 
         const dataURL = oc.toDataURL('image/png');
 
         if (isIOS && isSafari) {
           // iOS Safari: ファイル共有（写真アプリへ保存可能）
-          oc.toBlob(function(blob) {
+         2oc.toBlob(function(blob) {
             const file = new File([blob], name + '_QR解錠キー.png', { type: 'image/png' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
               navigator.share({ files: [file], title: 'QR解錠キー', text: name + 'さんのQR解錠キー' })
@@ -310,13 +321,13 @@
               '</style></head>' +
               '<body>' +
               '<img src="' + dataURL + '" />' +
-              '<p>📸 画像を<strong>長押し</strong>して<br>「写真に保存」を選んでください</p>' +
-              '<button onclick="window.close()">閉じる</button>' +
+              '<p>📸 画像を<strong>長押し</strong>して<br>「写真に保存」を選んでください<br><span style="font-size:0.85em;color:#aaa;">Long-press image → Save to Photos</span></p>' +
+              '<button onclick="window.close()">閉じる / Close</button>' +
               '</body></html>'
             );
             newWin.document.close();
           } else {
-            // ポップアップブロック時はオーバーレイ
+          2 // ポップアップブロック時はオーバーレイ
             showOverlay(dataURL);
           }
           return;
@@ -339,7 +350,7 @@
         ctx.quadraticCurveTo(x + w, y, x + w, y + r);
         ctx.lineTo(x + w, y + h - r);
         ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
+  2     ctx.lineTo(x + r, y + h);
         ctx.quadraticCurveTo(x, y + h, x, y + h - r);
         ctx.lineTo(x, y + r);
         ctx.quadraticCurveTo(x, y, x + r, y);
@@ -354,10 +365,10 @@
         img.src = dataURL;
         img.style.cssText = 'max-width:100%;max-height:62vh;border-radius:12px;';
         const msg = document.createElement('p');
-        msg.innerHTML = '📸 画像を<strong style="color:#FFD700">長押し</strong>して<br>「写真に保存」を選んでください';
+        msg.innerHTML = '📸 画像を<strong style="color:#FFD700">長押し</strong>して<br>「写真に保存」を選んでください<br><span style="font-size:0.85em;opacity:0.7;">Long-press → Save to Photos</span>';
         msg.style.cssText = 'color:white;margin-top:18px;font-size:16px;text-align:center;line-height:1.7;';
         const closeBtn = document.createElement('button');
-        closeBtn.textContent = '閉じる';
+        closeBtn.textContent = '閉じる / Close';
         closeBtn.style.cssText = 'margin-top:14px;padding:12px 32px;background:white;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;';
         closeBtn.onclick = function() { document.body.removeChild(overlay); };
         overlay.append(img, msg, closeBtn);
@@ -365,7 +376,7 @@
       }
 
       // ===== ホーム画面追加ボタン =====
-      document.getElementById('btn-home').addEventListener('click', function() {
+    0 document.getElementById('btn-home').addEventListener('click', function() {
         const isIOS      = /iphone|ipad|ipod/i.test(navigator.userAgent);
         const isSafari   = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
         const isChromeIOS = /crios/i.test(navigator.userAgent);
@@ -389,26 +400,26 @@
         guide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
         if (isChromeIOS) {
-          title.textContent = '📱 ホーム画面に追加する方法（Chrome）';
+          title.textContent = '📱 ホーム画面に追加する方法 / Add to Home Screen (Chrome)';
           steps.innerHTML =
-            '<li>下のURLをコピーしてください：</li>' +
+            '<li>下のURLをコピーしてください：<br><small>Copy the URL below:</small></li>' +
             '<div class="url-copy-box" id="url-display">' + currentURL + '</div>' +
-            '<button class="copy-btn" id="copy-btn" onclick="copyURL()">URLをコピー</button>' +
-            '<li style="margin-top:12px;"><strong>Safari</strong> を開き、コピーしたURLをアドレスバc��に貼り付けて開く</li>' +
-            '<li>Safari の画面下部の <strong>共有ボタン（□↑）</strong> をタップ</li>' +
-            '<li>「<strong>ホーム画面に追加</strong>」を選択 → 「追加」をタップ</li>';
+            '<button class="copy-btn" id="copy-btn" onclick="copyURL()">URLをコピー / Copy URL</button>' +
+            '<li style="margin-top:12px;"><strong>Safari</strong> を開き、コピーしたURLをアドレスバーに貼り付けて開く<br><small>Open <strong>Safari</strong> and paste the URL in the address bar</small></li>' +
+            '<li>Safari の画面下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>Tap the <strong>Share button (□↑)</strong> at the bottom of Safari</small></li>' +
+            '<li>「<strong>ホーム画面に追加</strong>」を選択 → 「追加」をタップ<br><small>Select "<strong>Add to Home Screen</strong>" → Tap "Add"</small></li>';
         } else if (isIOS && isSafari) {
-          title.textContent = '📱 Safari でホーム画面に追加する方法';
+          title.textContent = '📱 Safari でホーム画面に追加する方法 / Add via Safari';
           steps.innerHTML =
-            '<li>画面下部の <strong>共有ボタン（□↑）</strong> をタップ</li>' +
-            '<li>「<strong>ホーム画面に追加</strong>」を選択</li>' +
-            '<li>右上の「<strong>追加</strong>」をタップ</li>';
+            '<li>画面下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>Tap the <strong>Share button (□↑)</strong> at the bottom</small></li>' +
+            '<li>「<strong>ホーム画面に追加</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>"</small></li>' +
+            '<li>右上の「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>" in the upper right</small></li>';
         } else {
-          title.textContent = '📱 ホーム画面への追加方法';
+          title.textContent = '📱 ホーム画面への追加方法 / Add to Home Screen';
           steps.innerHTML =
-            '<li>ブラウザのメニュー（⋮）を開く</li>' +
-            '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択</li>' +
-            '<li>画面の指示に従ってください</li>';
+            '<li>ブラウザのメニュー（⋮）を開く<br><small>Open the browser menu (⋮)</small></li>' +
+            '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>" or "<strong>Install App</strong>"</small></li>' +
+            '<li>画面の指示に従ってください<br><small>Follow the on-screen instructions</small></li>';
         }
       });
 
@@ -418,7 +429,7 @@
         if (navigator.clipboard) {
           navigator.clipboard.writeText(url).then(function() {
             const btn = document.getElementById('copy-btn');
-            if (btn) { btn.textContent = 'コピーしました！'; btn.classList.add('copy-done'); }
+            if (btn) { btn.textContent = 'コピーしました！ Copied!'; btn.classList.add('copy-done'); }
           });
         } else {
           const ta = document.createElement('textarea');
@@ -436,7 +447,7 @@
     // Service Worker 登録
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(function(){});
-    }
+  2 }
   </script>
 </body>
 </html>
