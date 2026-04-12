@@ -2,7 +2,6 @@ const CACHE_NAME = 'qr-unlock-v2';
 const CACHE_URLS = [
   './qr.html',
   './icon-192.png',
-  './apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'
 ];
 
