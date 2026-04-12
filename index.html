@@ -12,255 +12,541 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
-    :root{--sky:#7ECEF4;--accent:#3A9B3A;--accent-dark:#2E7D2E;--yellow:#FFD93D;--green:#3BB273;--black:#1A1A1A;--white:#FFFFFF;}
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--sky);color:var(--black);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px 48px;}
-    .site-logo{font-size:1.05rem;font-weight:900;display:inline-flex;align-items:center;gap:8px;background:var(--white);border:2.5px solid var(--black);border-radius:30px;padding:6px 20px 6px 10px;box-shadow:3px 3px 0 var(--black);margin-bottom:24px;}
-    .site-logo .dot{width:28px;height:28px;background:var(--accent);border-radius:50%;border:2px solid var(--black);display:flex;align-items:center;justify-content:center;font-size:0.85rem;}
-    .main-card{width:100%;max-width:520px;background:var(--white);border:2.5px solid var(--black);border-radius:14px;box-shadow:5px 5px 0 var(--black);overflow:hidden;}
-    .card-top{background:var(--accent);padding:24px 28px 20px;position:relative;overflow:hidden;}
-    .card-top::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.3) 1.5px,transparent 1.5px);background-size:14px 14px;}
-    .card-top-inner{position:relative;z-index:1;}
-    .top-icon{width:52px;height:52px;background:var(--yellow);border:2.5px solid #fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:2px 2px 0 rgba(0,0,0,0.15);margin-bottom:12px;}
-    .card-top h1{font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:6px;text-shadow:2px 2px 0 rgba(0,0,0,0.15);}
-    .card-top p{font-size:0.88rem;color:rgba(255,255,255,0.9);}
-    .card-body{padding:28px;}
-    .field-label{font-weight:700;font-size:0.9rem;margin-bottom:7px;display:flex;align-items:center;gap:7px;}
-    .label-icon{width:22px;height:22px;background:var(--sky);border:1.5px solid var(--black);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;}
-    .tag-required{font-size:0.7rem;font-weight:700;background:#FF4D4D;color:#fff;border-radius:4px;padding:1px 6px;}
-    .form-input{width:100%;padding:11px 14px;border:2px solid #CCC;border-radius:10px;font-size:0.95rem;font-family:inherit;background:#FAFAFA;outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
-    .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(58,155,58,0.15);background:#fff;}
-    .otp-input{letter-spacing:0.3em;font-size:1.4rem;font-weight:700;text-align:center;}
-    .btn-primary{width:100%;padding:14px;background:var(--accent);color:#fff;border:2.5px solid var(--black);border-radius:10px;font-size:1.05rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:3px 3px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;display:flex;align-items:center;justify-content:center;gap:8px;}
-    .btn-primary:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--black);}
-    .btn-primary:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black);}
-    .btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-    .btn-secondary{width:100%;padding:12px;background:#fff;color:var(--black);border:2px solid var(--black);border-radius:10px;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:2px 2px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;}
-    .btn-secondary:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--black);}
-    .step-indicator{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px;}
-    .step-dot{width:10px;height:10px;border-radius:50%;background:#DDD;border:2px solid var(--black);transition:background 0.2s;}
-    .step-dot.active{background:var(--accent);}
-    .step-dot.done{background:var(--green);}
-    .step-line{width:40px;height:2px;background:#DDD;}
-    .divider{border:none;border-top:2px dashed #DDD;margin:24px 0;}
-    .steps-title{font-size:0.78rem;font-weight:700;color:#888;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;}
-    .step-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
-    .step-num{width:30px;height:30px;background:var(--yellow);border:2px solid var(--black);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;flex-shrink:0;box-shadow:2px 2px 0 var(--black);}
-    .step-text strong{display:block;font-size:0.88rem;font-weight:700;}
-    .step-text span{font-size:0.82rem;color:#666;}
-    .error-box{background:#FFEBEE;border:2px solid #E53935;border-radius:10px;padding:12px 16px;font-size:0.88rem;font-weight:700;color:#C62828;margin-bottom:20px;display:none;}
-    .loading-box{text-align:center;padding:20px 0;display:none;}
-    .spinner{width:40px;height:40px;border:4px solid #E0E0E0;border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-    .otp-sent-msg{background:#E8F5E9;border:2px solid var(--accent);border-radius:10px;padding:12px 16px;font-size:0.88rem;font-weight:700;color:var(--accent-dark);margin-bottom:20px;display:none;}
-    .otp-timer{font-size:0.8rem;color:#888;text-align:center;margin-top:8px;}
-    .otp-timer.expiring{color:#E53935;font-weight:700;}
-    .success-view{display:none;}
-    .success-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#fff;border:2.5px solid var(--black);border-radius:30px;padding:6px 18px;font-weight:900;font-size:0.92rem;box-shadow:2px 2px 0 var(--black);margin-bottom:20px;}
-    .qr-result-box{background:var(--sky);border:2.5px solid var(--black);border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;box-shadow:3px 3px 0 rgba(0,0,0,0.08);}
-    .qr-card-header{font-size:0.82rem;font-weight:700;color:#555;margin-bottom:6px;}
-    .qr-card-title{font-size:1.1rem;font-weight:900;color:var(--accent-dark);margin-bottom:16px;}
-    #qr-canvas{display:flex;justify-content:center;margin-bottom:14px;}
-    #qr-canvas canvas,#qr-canvas img{border-radius:8px;border:3px solid var(--black);box-shadow:3px 3px 0 var(--black);}
-    .qr-card-footer{font-size:0.72rem;color:#777;margin-top:10px;}
-    .action-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
-    .btn-save{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--yellow);color:var(--black);border:2.5px solid var(--black);border-radius:10px;padding:13px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:3px 3px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;}
-    .btn-save:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--black);}
-    .btn-home{display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:var(--black);border:2px solid var(--black);border-radius:10px;padding:13px;font-size:1rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:2px 2px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;}
-    .btn-home:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--black);}
-    .token-label{font-size:0.75rem;font-weight:700;color:#888;margin:12px 0 4px;}
-    .token-box{background:#1A1A1A;color:#FFD93D;font-family:'Courier New',monospace;font-size:0.75rem;border-radius:8px;padding:10px 14px;word-break:break-all;text-align:left;border:2px solid #333;margin-bottom:16px;}
-    .info-box{background:#fff;border:2px solid var(--black);border-radius:10px;padding:12px 16px;font-size:0.85rem;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px;}
-    .info-icon{width:24px;height:24px;background:var(--sky);border:2px solid var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;}
-    .home-guide{background:#FFF8E1;border:2px solid #F9A825;border-radius:10px;padding:14px 16px;font-size:0.84rem;margin-bottom:16px;display:none;}
-    .home-guide strong{display:block;margin-bottom:6px;font-size:0.9rem;}
-    .home-guide ol{padding-left:18px;line-height:1.8;}
-    .btn-back{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--black);border:2px solid var(--black);border-radius:8px;padding:9px 20px;font-size:0.88rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:2px 2px 0 var(--black);transition:transform 0.1s,box-shadow 0.1s;}
-    .btn-back:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--black);}
-    .footer-note{text-align:center;font-size:0.78rem;color:rgba(0,0,0,0.45);margin-top:20px;}
+    :root {
+      --sky:    #7ECEF4;
+      --accent: #3A9B3A;
+      --accent-dark: #2E7D2E;
+      --yellow: #FFD93D;
+      --green:  #3BB273;
+      --black:  #1A1A1A;
+      --white:  #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+      background: var(--sky);
+      color: var(--black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px 48px;
+    }
+    .site-logo {
+      font-size: 1.05rem; font-weight: 900;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--white); border: 2.5px solid var(--black);
+      border-radius: 30px; padding: 6px 20px 6px 10px;
+      box-shadow: 3px 3px 0 var(--black); margin-bottom: 24px;
+    }
+    .site-logo .dot {
+      width: 28px; height: 28px; background: var(--accent);
+      border-radius: 50%; border: 2px solid var(--black);
+      display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+    }
+    .main-card {
+      width: 100%; max-width: 520px; background: var(--white);
+      border: 2.5px solid var(--black); border-radius: 14px;
+      box-shadow: 5px 5px 0 var(--black); overflow: hidden;
+    }
+    .card-top {
+      background: var(--accent); padding: 24px 28px 20px;
+      position: relative; overflow: hidden;
+    }
+    .card-top::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1.5px, transparent 1.5px);
+      background-size: 14px 14px;
+    }
+    .card-top-inner { position: relative; z-index: 1; }
+    .top-icon {
+      width: 52px; height: 52px; background: var(--yellow);
+      border: 2.5px solid #fff; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.15); margin-bottom: 12px;
+    }
+    .card-top h1 { font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 6px; text-shadow: 2px 2px 0 rgba(0,0,0,0.15); }
+    .card-top p  { font-size: 0.88rem; color: rgba(255,255,255,0.9); }
+    .card-body { padding: 28px; }
+    .field-label { font-weight: 700; font-size: 0.9rem; margin-bottom: 7px; display: flex; align-items: center; gap: 7px; }
+    .label-icon { width: 22px; height: 22px; background: var(--sky); border: 1.5px solid var(--black); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+    .tag-required { font-size: 0.7rem; font-weight: 700; background: #FF4D4D; color: #fff; border-radius: 4px; padding: 1px 6px; }
+    .form-input {
+      width: 100%; padding: 11px 14px; border: 2px solid #CCC; border-radius: 10px;
+      font-size: 0.95rem; font-family: inherit; background: #FAFAFA; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(58,155,58,0.15); background: #fff; }
+    .otp-input { letter-spacing: 0.3em; font-size: 1.4rem; font-weight: 700; text-align: center; }
+    .btn-primary {
+      width: 100%; padding: 14px; background: var(--accent); color: #fff;
+      border: 2.5px solid var(--black); border-radius: 10px;
+      font-size: 1.05rem; font-weight: 900; font-family: inherit; cursor: pointer;
+      box-shadow: 3px 3px 0 var(--black); transition: transform 0.1s, box-shadow 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primary:hover  { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--black); }
+    .btn-primary:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--black); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: 3px 3px 0 var(--black); }
+    .btn-secondary {
+      width: 100%; padding: 12px; background: #fff; color: var(--black);
+      border: 2px solid var(--black); border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700; font-family: inherit; cursor: pointer;
+      box-shadow: 2px 2px 0 var(--black); transition: transform 0.1s, box-shadow 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;
+    }
+    .btn-secondary:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); }
+    .step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; }
+    .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #DDD; border: 2px solid var(--black); transition: background 0.2s; }
+    .step-dot.active { background: var(--accent); }
+    .step-dot.done   { background: var(--green); }
+    .step-line { width: 40px; height: 2px; background: #DDD; }
+    .divider { border: none; border-top: 2px dashed #DDD; margin: 24px 0; }
+    .steps-title { font-size: 0.78rem; font-weight: 700; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
+    .step-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    .step-num { width: 30px; height: 30px; background: var(--yellow); border: 2px solid var(--black); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; flex-shrink: 0; box-shadow: 2px 2px 0 var(--black); }
+    .step-text strong { display: block; font-size: 0.88rem; font-weight: 700; }
+    .step-text span   { font-size: 0.82rem; color: #666; }
+    .error-box { background: #FFEBEE; border: 2px solid #E53935; border-radius: 10px; padding: 12px 16px; font-size: 0.88rem; font-weight: 700; color: #C62828; margin-bottom: 20px; display: none; }
+    .loading-box { text-align: center; padding: 20px 0; display: none; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #E0E0E0; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .otp-sent-msg { background: #E8F5E9; border: 2px solid var(--accent); border-radius: 10px; padding: 12px 16px; font-size: 0.88rem; font-weight: 700; color: var(--accent-dark); margin-bottom: 20px; display: none; }
+    .otp-timer { font-size: 0.8rem; color: #888; text-align: center; margin-top: 8px; }
+    .otp-timer.expiring { color: #E53935; font-weight: 700; }
+
+    /* 発行完了 */
+    .success-view { display: none; }
+    .success-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green); color: #fff; border: 2.5px solid var(--black); border-radius: 30px; padding: 6px 18px; font-weight: 900; font-size: 0.92rem; box-shadow: 2px 2px 0 var(--black); margin-bottom: 20px; }
+
+    /* QR結果カード（スクリーンショット対象） */
+    .qr-result-box {
+      background: var(--sky); border: 2.5px solid var(--black); border-radius: 12px;
+      padding: 24px; text-align: center; margin-bottom: 16px;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.08);
+    }
+    .qr-card-header { font-size: 0.82rem; font-weight: 700; color: #555; margin-bottom: 6px; }
+    .qr-card-title  { font-size: 1.1rem; font-weight: 900; color: var(--accent-dark); margin-bottom: 16px; }
+    #qr-canvas { display: flex; justify-content: center; margin-bottom: 14px; }
+    #qr-canvas canvas, #qr-canvas img { border-radius: 8px; border: 3px solid var(--black); box-shadow: 3px 3px 0 var(--black); }
+    .qr-card-footer { font-size: 0.72rem; color: #777; margin-top: 10px; }
+
+    /* アクションボタン群 */
+    .action-btns { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .btn-save {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--yellow); color: var(--black); border: 2.5px solid var(--black);
+      border-radius: 10px; padding: 13px; font-size: 1rem; font-weight: 900; font-family: inherit;
+      cursor: pointer; box-shadow: 3px 3px 0 var(--black); transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn-save:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--black); }
+    .btn-home {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: #fff; color: var(--black); border: 2px solid var(--black);
+      border-radius: 10px; padding: 13px; font-size: 1rem; font-weight: 700; font-family: inherit;
+      cursor: pointer; box-shadow: 2px 2px 0 var(--black); transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn-home:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); }
+
+    .token-label { font-size: 0.75rem; font-weight: 700; color: #888; margin: 12px 0 4px; }
+    .token-box { background: #1A1A1A; color: #FFD93D; font-family: 'Courier New', monospace; font-size: 0.75rem; border-radius: 8px; padding: 10px 14px; word-break: break-all; text-align: left; border: 2px solid #333; margin-bottom: 16px; }
+
+    .info-box { background: #fff; border: 2px solid var(--black); border-radius: 10px; padding: 12px 16px; font-size: 0.85rem; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
+    .info-icon { width: 24px; height: 24px; background: var(--sky); border: 2px solid var(--black); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+
+    /* ホーム追加ガイド */
+    .home-guide {
+      background: #FFF8E1; border: 2px solid #F9A825;
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 0.84rem; margin-bottom: 16px; display: none;
+    }
+    .home-guide strong { display: block; margin-bottom: 6px; font-size: 0.9rem; }
+    .home-guide ol { padding-left: 18px; line-height: 1.8; }
+
+    .btn-back { display: inline-flex; align-items: center; gap: 6px; background: #fff; color: var(--black); border: 2px solid var(--black); border-radius: 8px; padding: 9px 20px; font-size: 0.88rem; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 2px 2px 0 var(--black); transition: transform 0.1s, box-shadow 0.1s; }
+    .btn-back:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); }
+    .footer-note { text-align: center; font-size: 0.78rem; color: rgba(0,0,0,0.45); margin-top: 20px; }
   </style>
 </head>
 <body>
-  <div class="site-logo"><span class="dot">&#x1F511;</span><span>出町ガジェット / QR解錠キー</span></div>
+
+  <div class="site-logo">
+    <span class="dot">🔑</span>
+    <span>出町ガジェット / QR解錠キー</span>
+  </div>
+
   <div class="main-card">
     <div class="card-top">
       <div class="card-top-inner">
-        <div class="top-icon" id="header-icon">&#x1F4F2;</div>
-        <h1 id="header-title">QR解錠キーを発行する</h1>
-        <p id="header-sub">メール認証を経て、あなた専用のQRコードキーを発行します。</p>
+        <div class="top-icon" id="header-icon">📲</div>
+        <h1 id="header-title">QRキーを発行する<br><span style="font-size:0.6em;font-weight:400;display:block;margin-top:2px;">Issue Your QR Key</span></h1>
+        <p  id="header-sub">お名前を入力して、あなた専用のQRキーを発行します。<br><span style="font-size:0.9em;opacity:0.85;">Enter your name to receive a personal QR key.</span></p>
       </div>
     </div>
+
     <div class="card-body">
-      <div class="error-box" id="error-box">&#x26A0;&#xFE0F; <span id="error-msg"></span></div>
-      <div class="loading-box" id="loading-box"><div class="spinner"></div><div id="loading-msg" style="font-size:0.9rem;color:#666;font-weight:700;">処理中...</div></div>
+      <div class="error-box" id="error-box">⚠️ <span id="error-msg"></span></div>
+      <div class="loading-box" id="loading-box">
+        <div class="spinner"></div>
+        <div id="loading-msg" style="font-size:0.9rem;color:#666;font-weight:700;">処理中...</div>
+      </div>
+
       <!-- STEP 1 -->
       <div id="step1-view">
-        <div class="step-indicator"><div class="step-dot active"></div><div class="step-line"></div><div class="step-dot"></div><div class="step-line"></div><div class="step-dot"></div></div>
+        <div class="step-indicator">
+          <div class="step-dot active"></div><div class="step-line"></div>
+          <div class="step-dot"></div><div class="step-line"></div>
+          <div class="step-dot"></div>
+        </div>
         <form id="step1-form">
-          <div style="margin-bottom:18px;"><div class="field-label"><span class="label-icon">&#x1F464;</span>お名前<span class="tag-required">必須</span></div><input type="text" class="form-input" id="input-name" placeholder="例：山田 太郎" required maxlength="64" autocomplete="name" /></div>
-          <div style="margin-bottom:24px;"><div class="field-label"><span class="label-icon">&#x2709;&#xFE0F;</span>メールアドレス<span class="tag-required">必須</span></div><input type="email" class="form-input" id="input-email" placeholder="例：taro@gmail.com" required maxlength="128" autocomplete="email" /></div>
-          <button type="submit" class="btn-primary"><span style="font-size:1.2rem;">&#x1F4E8;</span>認証コードをメールで送信</button>
+          <div style="margin-bottom:18px;">
+            <div class="field-label"><span class="label-icon">👤</span>お名前 / Name<span class="tag-required">必須 Required</span></div>
+            <input type="text" class="form-input" id="input-name" placeholder="例：山田 太郎" required maxlength="64" autocomplete="name" />
+          </div>
+          <div style="margin-bottom:24px;">
+            <div class="field-label"><span class="label-icon">✉️</span>メールアドレス / Email<span class="tag-required">必須 Required</span></div>
+            <input type="email" class="form-input" id="input-email" placeholder="例：taro@gmail.com" required maxlength="128" autocomplete="email" />
+          </div>
+          <button type="submit" class="btn-primary" style="flex-direction:column;gap:2px;">
+            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">📨</span>認証コードを送る</span>
+            <span style="font-size:0.8em;font-weight:400;opacity:0.85;">Send Verification Code</span>
+          </button>
         </form>
         <hr class="divider" />
-        <div class="steps-title">&#x1F4D6; 発行の流れ</div>
-        <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>名前とメールを入力</strong><span>認証コードをメールに送ります。</span></div></div>
-        <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>認証コードを入力</strong><span>メールに届いた6桁のコードを入力してください。</span></div></div>
-        <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>QRコードを保存</strong><span>画像保存またはホーム画面に追加して使えます。</span></div></div>
+        <div class="steps-title">📖 使い方 / HOW TO USE</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>お名前・メールを入力してコードを送る</strong><span>Enter name &amp; email, then send verification code</span></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>届いた6桁のコードを入力してQRを発行</strong><span>Enter the 6-digit code from your email</span></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>QRコードをドアのスキャナーにかざして解錠</strong><span>Hold QR code to the door scanner to unlock</span></div></div>
       </div>
+
       <!-- STEP 2 -->
       <div id="step2-view" style="display:none;">
-        <div class="step-indicator"><div class="step-dot done"></div><div class="step-line"></div><div class="step-dot active"></div><div class="step-line"></div><div class="step-dot"></div></div>
-        <div class="otp-sent-msg" id="otp-sent-msg">&#x2705; <span id="otp-sent-email"></span> に認証コードを送信しました。</div>
+        <div class="step-indicator">
+          <div class="step-dot done"></div><div class="step-line"></div>
+          <div class="step-dot active"></div><div class="step-line"></div>
+          <div class="step-dot"></div>
+        </div>
+        <div class="otp-sent-msg" id="otp-sent-msg">✅ <span id="otp-sent-email"></span> に認証コードを送信しました。<br><span style="font-size:0.88em;font-weight:400;">Verification code sent to your email.</span></div>
         <form id="step2-form">
-          <div style="margin-bottom:24px;"><div class="field-label"><span class="label-icon">&#x1F522;</span>認証コード（6桁）<span class="tag-required">必須</span></div><input type="text" class="form-input otp-input" id="input-otp" placeholder="123456" required maxlength="6" inputmode="numeric" pattern="[0-9]{6}" autocomplete="one-time-code" /><div class="otp-timer" id="otp-timer">有効期限：5:00</div></div>
-          <button type="submit" class="btn-primary"><span style="font-size:1.2rem;">&#x2705;</span>認証してQRキーを発行する</button>
-          <button type="button" class="btn-secondary" id="resend-btn">&#x1F504; コードを再送する</button>
+          <div style="margin-bottom:24px;">
+            <div class="field-label"><span class="label-icon">🔢</span>認証コード（6桁）/ Verification Code<span class="tag-required">必須 Required</span></div>
+            <input type="text" class="form-input otp-input" id="input-otp" placeholder="123456" required maxlength="6" inputmode="numeric" pattern="[0-9]{6}" autocomplete="one-time-code" />
+            <div class="otp-timer" id="otp-timer">有効期限：5:00</div>
+          </div>
+          <button type="submit" class="btn-primary" style="flex-direction:column;gap:2px;">
+            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">✅</span>認証してQRキーを発行する</span>
+            <span style="font-size:0.8em;font-weight:400;opacity:0.85;">Verify &amp; Issue QR Key</span>
+          </button>
+          <button type="button" class="btn-secondary" id="resend-btn">🔄 コードを再送する / Resend Code</button>
         </form>
       </div>
-      <!-- STEP 3 -->
+
+      <!-- STEP 3: 発行完了 -->
       <div class="success-view" id="success-view">
-        <div style="text-align:center;"><div class="success-badge">&#x2705; 発行完了！</div></div>
+        <div style="text-align:center;"><div class="success-badge">✅ 発行完了！ / QR Key Issued!</div></div>
+
+        <!-- スクリーンショット対象カード -->
         <div class="qr-result-box" id="qr-card">
-          <div class="qr-card-header">出町ガジェット｜QR解錠キー</div>
+          <div class="qr-card-header">出町ガジェット / Demachi Gadget<br><span style="font-weight:400;font-size:0.9em;">QRキー / QR Key</span></div>
           <div class="qr-card-title" id="result-name-card"></div>
           <div id="qr-canvas"></div>
-          <div class="qr-card-footer">このQRをドアのスキャナーにかざして解錠</div>
+          <div class="qr-card-footer">ドアのスキャナーにかざして解錠<br>Hold up to the door scanner to unlock</div>
         </div>
+
+        <!-- アクションボタン -->
         <div class="action-btns">
-          <button class="btn-save" id="btn-save-image">&#x1F4F8; QRコードを画像保存する</button>
-          <button class="btn-home" id="btn-add-home">&#x1F4F1; QRコードをホーム画面に追加する</button>
+          <button class="btn-save" id="btn-save-image" style="flex-direction:column;align-items:center;gap:2px;">
+            <span>📸 QRコードを画像保存する</span>
+            <span style="font-size:0.8em;font-weight:400;opacity:0.85;">Save QR Code Image</span>
+          </button>
+          <button class="btn-home" id="btn-add-home" style="flex-direction:column;align-items:center;gap:2px;">
+            <span>📱 ホーム画面に追加する</span>
+            <span style="font-size:0.8em;font-weight:400;opacity:0.85;">Add to Home Screen</span>
+          </button>
         </div>
+
+        <!-- ホーム追加ガイド -->
         <div class="home-guide" id="home-guide">
-          <strong id="home-guide-title">&#x1F4F1; ホーム画面への追加方法</strong>
+          <strong id="home-guide-title">📱 ホーム画面への追加方法</strong>
           <ol id="home-guide-steps"></ol>
         </div>
-        <div class="token-label">トークン（控え用）</div>
+
+        <div class="token-label">トークン（控え用）/ Token ID</div>
         <div class="token-box" id="result-token"></div>
-        <div class="info-box"><div class="info-icon">&#x2139;&#xFE0F;</div><div>QRコードをホーム画面に追加すると、アプリのように素早く開けます。画像保存も可能です。</div></div>
-        <div style="text-align:center;"><button class="btn-back" onclick="resetForm()">&#x2795; 別のキーを発行する</button></div>
+
+        <div class="info-box">
+          <div class="info-icon">ℹ️</div>
+          <div>QRコードをホーム画面に追加すると、アプリのように素早く開けます。画像保存も可能です。<br><span style="font-size:0.88em;color:#888;">Add the QR code to your home screen for quick access. You can also save it as an image.</span></div>
+        </div>
+        <div style="text-align:center;">
+          <button class="btn-back" onclick="resetForm()">➕ 別のキーを発行する / Issue Another Key</button>
+        </div>
       </div>
     </div>
   </div>
-  <div class="footer-note">&#x1F512; QRコードはUUIDで生成されており、推測・複製は不可能です。</div>
-  <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZH1P3FjKjvCbM1N3MA5AAcFtP1tm-W1voSTb3nfEF6TQpjUBI4fDIn7koOqPai8j3Nw/exec";
-    let state={name:'',email:'',token:''}, otpTimerInterval=null, deferredInstallPrompt=null;
-    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;});
-    function generateUUID(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);});}
-    function show(id){document.getElementById(id).style.display='block';}
-    function hide(id){document.getElementById(id).style.display='none';}
-    function showFlex(id){document.getElementById(id).style.display='flex';}
-    function showError(msg){document.getElementById('error-msg').textContent=msg;showFlex('error-box');}
-    function hideError(){hide('error-box');}
-    function showLoading(msg){document.getElementById('loading-msg').textContent=msg||'処理中...';show('loading-box');}
-    function hideLoading(){hide('loading-box');}
-    function startOtpTimer(){
-      clearInterval(otpTimerInterval);let seconds=5*60;const t=document.getElementById('otp-timer');
-      function u(){const m=Math.floor(seconds/60),s=seconds%60;t.textContent='有効期限：'+m+':'+String(s).padStart(2,'0');t.className='otp-timer'+(seconds<=60?' expiring':'');if(seconds<=0){clearInterval(otpTimerInterval);t.textContent='有効期限が切れました。再送してください。';}seconds--;}
-      u();otpTimerInterval=setInterval(u,1000);
-    }
-    function buildQR(token){const el=document.getElementById('qr-canvas');el.innerHTML='';new QRCode(el,{text:token,width:200,height:200,colorDark:'#1A1A1A',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
-    function saveToHash(name,token){history.replaceState(null,'','#t='+encodeURIComponent(token)+'&n='+encodeURIComponent(name));}
-    function loadFromHash(){const hash=location.hash.slice(1);if(!hash)return null;const p={};hash.split('&').forEach(s=>{const[k,v]=s.split('=');p[k]=decodeURIComponent(v||'');});return(p.t&&p.n)?{token:p.t,name:p.n}:null;}
-    function showQR(name,token){
-      hide('step1-view'); hide('step2-view'); hide('loading-box');
-      show('success-view');
-      document.getElementById('result-name-card').textContent=name+' さんのQRコードキー';
-      document.getElementById('result-token').textContent=token;
-      document.getElementById('header-icon').textContent='✅';
-      document.getElementById('header-title').textContent='発行完了！';
-      document.getElementById('header-sub').textContent='QRコードキーを発行しました。保存してください。';
-      setTimeout(()=>buildQR(token),100);
-      saveToHash(name,token);
-    }
-    document.getElementById('btn-save-image').addEventListener('click',async()=>{
-      const card=document.getElementById('qr-card');
-      try{
-        const canvas=await html2canvas(card,{scale:2,backgroundColor:'#7ECEF4',useCORS:true});
-        const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
-        const filename=(state.name||'qrkey')+'_QR解㞠キー.png';
-        const file=new File([blob],filename,{type:'image/png'});
-        const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-        if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-          await navigator.share({files:[file],title:'QR解㞠キー',text:state.name+'さんのQR解㞠キー'});
-        } else if (isIOS) {
-          // iOS Chrome：新しいタブに画像だけ表示 → 長押しで保存
-          const dataURL = canvas.toDataURL('image/png');
-          const newWin = window.open('', '_blank');
-          if (newWin) {
-            newWin.document.write(
-              '<!DOCTYPE html><html><head>' +
-              '<meta charset="UTF-8">' +
-              '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-              '<title>QR画像を保存 - ' + (state.name || 'QR') + '</title>' +
-              '<style>body{margin:0;background:#111;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}img{max-width:90%;max-height:75vh;border-radius:12px;}p{color:#fff;margin-top:20px;font-size:16px;text-align:center;line-height:1.7;padding:0 20px;}strong{color:#FFD700;}button{margin-top:16px;padding:12px 28px;background:#fff;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;}</style></head>' +
-              '<body><img src="' + dataURL + '"><p>📸 画像を<strong>長押し</strong>して<br>「写真に保存」を選んでください</p>' +
-              '<button onclick="window.close()">閉じる</button></body></html>'
-            );
-            newWin.document.close();
-          } else {
-            const overlay = document.createElement('div');
-            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
-            const img = document.createElement('img');
-            img.src = dataURL;
-            img.style.cssText = 'max-width:100%;max-height:65vh;border-radius:12px;';
-            const msg = document.createElement('p');
-            msg.innerHTML = '📸 画像を<strong style="color:#FFD700">長押し</strong>して<br>「写真に保存」を選んでください';
-            msg.style.cssText = 'color:white;margin-top:18px;font-size:16px;text-align:center;line-height:1.7;';
-            const closeBtn = document.createElement('button');
-            closeBtn.textContent = '閉じる';
-            closeBtn.style.cssText = 'margin-top:14px;padding:12px 32px;background:white;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;';
-            closeBtn.onclick = () => document.body.removeChild(overlay);
-            overlay.append(img, msg, closeBtn);
-            document.body.appendChild(overlay);
-          }
-        } else {
-          const url=URL.createObjectURL(blob);
-          const a=document.createElement('a');
-          a.href=url;a.download=filename;a.click();
-          setTimeout(()=>URL.revokeObjectURL(url),1000);
-        }
-      }catch(err){
-        if(err.name!=='AbortError')alert('画像の保存に失敗しました: '+err.message);
-      }
-    });
-    // ホーム画面に追加 → QR専用ページ（qr.html）を開く
-    document.getElementById('btn-add-home').addEventListener('click', () => {
-      if (!state.token || !state.name) return;
-      const qrPageURL = location.origin + location.pathname.replace(/[^/]*$/, '') + 'qr.html'
-        + '#t=' + encodeURIComponent(state.token)
-        + '&n=' + encodeURIComponent(state.name);
-      location.href = qrPageURL;
-    });
 
-    });    document.getElementById('step1-form').addEventListener('submit',async(e)=>{
-      e.preventDefault();hideError();
-      const name=document.getElementById('input-name').value.trim();
-      const email=document.getElementById('input-email').value.trim();
-      if(!name||!email)return;
-      state.name=name;state.email=email;
-      hide('step1-view');showLoading('認証コードを送信中...');
-      try{const res=await fetch(APPS_SCRIPT_URL+'?action=sendOTP&name='+encodeURIComponent(name)+'&email='+encodeURIComponent(email));const data=await res.json();if(data.result!=='ok')throw new Error(data.message||'送信に失敗しました');hideLoading();show('step2-view');document.getElementById('otp-sent-email').textContent=email;document.getElementById('otp-sent-msg').style.display='flex';startOtpTimer();}
-      catch(err){hideLoading();show('step1-view');showError(err.message);}
-    });
-    document.getElementById('step2-form').addEventListener('submit',async(e)=>{
-      e.preventDefault();hideError();
-      const otp=document.getElementById('input-otp').value.trim();
-      if(!otp||otp.length!==6){showError('6桁の認証コードを入力してください。');return;}
-      const token=generateUUID();state.token=token;
-      hide('step2-view');showLoading('QRコードを登録中...');
-      try{const url=APPS_SCRIPT_URL+'?action=register&name='+encodeURIComponent(state.name)+'&email='+encodeURIComponent(state.email)+'&token='+encodeURIComponent(token)+'&otp='+encodeURIComponent(otp);const res=await fetch(url);const data=await res.json();if(data.result!=='ok')throw new Error(data.message||'登録に失敗しました');clearInterval(otpTimerInterval);hideLoading();showQR(state.name,token);}
-      catch(err){hideLoading();show('step2-view');showError(err.message);}
-    });
-    document.getElementById('resend-btn').addEventListener('click',async()=>{
-      hideError();clearInterval(otpTimerInterval);document.getElementById('input-otp').value='';
-      hide('step2-view');showLoading('認証コードを再送中...');
-      try{const res=await fetch(APPS_SCRIPT_URL+'?action=sendOTP&name='+encodeURIComponent(state.name)+'&email='+encodeURIComponent(state.email));const data=await res.json();if(data.result!=='ok')throw new Error(data.message||'再送に失敗しました');hideLoading();show('step2-view');document.getElementById('otp-sent-msg').style.display='flex';startOtpTimer();}
-      catch(err){hideLoading();show('step2-view');showError(err.message);}
-    });
-    function resetForm(){clearInterval(otpTimerInterval);state={name:'',email:'',token:''};history.replaceState(null,'',location.pathname);hide('success-view');hide('step2-view');hide('loading-box');hideError();show('step1-view');document.getElementById('step1-form').reset();document.getElementById('input-otp').value='';document.getElementById('otp-sent-msg').style.display='none';document.getElementById('home-guide').style.display='none';document.getElementById('header-icon').textContent='📲';document.getElementById('header-title').textContent='QR解錠キーを発行する';document.getElementById('header-sub').textContent='メール認証を経て、あなた専用のQRコードキーを発行します。';document.getElementById('qr-canvas').innerHTML='';}
-    (function(){const saved=loadFromHash();if(saved){state.name=saved.name;state.token=saved.token;showQR(saved.name,saved.token);}})();
-    if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
-  </script>
-</body>
-</html>
+  <div class="footer-note">🔒 T��x��8�k�URQ8�i��y�!�� �.#y�h�b*y�*8�k�*&:c,�����(yb�yc%��i��cx�o��fx� ����T��^\�X[�Y�Y�HURQ�[�]]ܚ^�Y\�H�[��H�X��Y	�[\��]���Y��]�����ܚ\���ۜ�T���ԒT�T�H�΋���ܚ\�����K���K�XXܛ�����RٞX؞�Tњ�ڝ�ؓLS��PMPPXѝ]KU�]����ۙ�Q��\�P�M�[�����TZN�ӝ��^XȎ�]�]HH��[YN�	��[XZ[�	����[��	��N]�[Y\�[�\��[H�[]Y�\��Y[��[��\H�[����H8�8����x��8��8����8��x�����8स�x��������x����"���Y{�"B��[��˘Y]�[�\�[�\�	ؙY�ܙZ[��[��\	�
+JHO�K��]�[�Y�][
+
+NY�\��Y[��[��\HNJN��[��[ۈ�[�\�]UURQ
+
+H�]\��	�^M^^^	˜�\X�J��WK���O��ۜ��HX]��[��J
+H
+�M��]\��
+�OOH	�	����
+�	��
+JK����[��M�NJNB���[��[ۈ���Y
+H���[Y[���][[Y[��RY
+Y
+K��[K�\�^HH	؛�����B��[��[ۈYJY
+H���[Y[���][[Y[��RY
+Y
+K��[K�\�^HH	ۛۙI��B��[��[ۈ��ћ^
+Y
+H���[Y[���][[Y[��RY
+Y
+K��[K�\�^HH	ٛ^	��B��[��[ۈ���\��܊\��H���[Y[���][[Y[��RY
+	�\��܋[\���K�^�۝[�H\�����ћ^
+	�\��܋X��	�N�B��[��[ۈYQ\��܊
+H�YJ	�\��܋X��	�N�B��[��[ۈ����Y[��\��H���[Y[���][[Y[��RY
+	��Y[��[\���K�^�۝[�H\��	�a��!�.+K��������	��Y[��X��	�N�B��[��[ۈYS�Y[��
+H�YJ	��Y[��X��	�N�B���[��[ۈ�\��[Y\�
+H�X\�[�\��[
+�[Y\�[�\��[
+N]�X�ۙ�H
+H
+�
+��ۜ�[Y\�[H��[Y[���][[Y[��RY
+	��][Y\��N�[��[ۈ\]J
+H�ۜ�HHX]���܊�X�ۙ��
+�
+K�H�X�ۙ�	H
+�[Y\�[�^�۝[�H	��"yb�y�'�fd�^\�\�[��	�
+�H
+�	Ή�
+���[���K�Y�\�
+�	�	�N[Y\�[��\�Ә[YHH	��][Y\��
+�
+�X�ۙ�H
+��	�^\�[����	��NY�
+�X�ۙ�H
+H��X\�[�\��[
+�[Y\�[�\��[
+N�[Y\�[�^�۝[�H	��"yb�y�'�fd9b!�����H^\�Y�X\�H�\�[����B��X�ۙ�KNB�\]J
+N�[Y\�[�\��[H�][�\��[
+\]KL
+NB���[��[ۈ�Z[T���[�H�ۜ�[H��[Y[���][[Y[��RY
+	�\�X�[��\��N[�[��\�SH	���]�T���J[�^���[��Y��ZY�����ܑ\�Έ	��PLPLPI���ܓY��	�ٙ�������ܜ�X�]�[�T���K��ܜ�X�]�[�HJNB����T�8����������x�j���8��8������j9d#ybcxह/�ykf8�e��i�o�ya`�[��[ۈ�]�U�\�
+�[YK��[�H�ۜ�\�H	��I�
+�[���UT�P��\ۙ[�
+��[�H
+�	ɛ�I�
+�[���UT�P��\ۙ[�
+�[YJN\�ܞK��\X�T�]J�[	��\�
+NB���[��[ۈ�Y���R\�
+
+H�ۜ�\�H��][ۋ�\���X�JJNY�
+Z\�
+H�]\���[�ۜ�\�[\�H�N\���]
+	ɉ�K��ܑXX�
+O���ۜ����HH��]
+	�I�N�\�[\���HHX��UT�P��\ۙ[�
+�	��N�JNY�
+\�[\˝	��\�[\˛�H�]\�����[��\�[\˝�[YN�\�[\˛�N�]\���[B����8����8��y�.�`��ह/�ykf���[Y[���][[Y[��RY
+	؝�\�]�KZ[XY�I�K�Y]�[�\�[�\�	��X���\�[��
+
+HO��ۜ��\�H��[Y[���][[Y[��RY
+	�\�X�\�	�N�H�ۜ��[��\�H]�Z][��[��\��\����[N���X��ܛ�[���܎�	���P�Q�	�\�P�ԔΈ�YHJN�ۜ��؈H]�Z]�]���Z\�J�\�O��[��\˝Л؊�\�	�[XY�K����JN�ۜ��[[�[YHH
+�]K��[YH	�\��^I�H
+�	��T�)��c(8�x�������ۜ��[HH�]��[J؛ؗK�[[�[YK�\N�	�[XY�K����JN�ۜ�\�S��H�\ۙ_\Y\��K�\�
+�]�Y�]܋�\�\�Y�[�
+N����X��\�HT{�"S���Y�\�H8�j��j{�&���x�x�8����ly�"yk�o�8�k�h-9d";�"B�Y�
+�]�Y�]܋��\�H	���]�Y�]܋��[��\�H	���]�Y�]܋��[��\�J��[\Έٚ[WHJJH]�Z]�]�Y�]܋��\�J��[\Έٚ[WK]N�	�T�)��c(8�x��	�^��]K��[YH
+�	��ex���k�T�)��c(8�x��	�JNH[�HY�
+\�S��H��S�����Y{�&���8�e��a8�����j��.�`���h8�dz(j9�.�8���:em���8�e��i�/�ykf��ۜ�]UT�H�[��\˝�]UT�
+	�[XY�K����N�ۜ��]��[�H�[��˛�[�	��	�؛[���NY�
+�]��[�H�]��[����[Y[��ܚ]J�	�Q��TH[�[�XY��
+	�Y]H�\��]H�U�N���
+	�Y]H�[YOH��Y]�ܝ��۝[�H��YY]�X�K]�Y[�]X[\��[OLH���
+	�]O�T��.�`��ह/�ykfH	�
+�
+�]K��[YH	�T��H
+�	��]O��
+	��[O���^�X\��[��ؘX��ܛ�[���LLN�Z[�ZZY��L��\�^N��^ٛ^Y\�X�[ێ���[[��[YۋZ][\Θ�[�\�ڝ\�Y�KX�۝[���[�\��I�
+	�[Y��X^]�Y�L	N�X^ZZY���]�؛ܙ\�\�Y]\ΌL�؛�\�Y�Ό
+��ؘJ�JN�I�
+	����܎�ٙ���X\��[�]���ٛ۝\�^�N�M��^X[Yێ��[�\��[�KZZY��K���Y[�Ό��I�
+	���ۙ����܎�ё�
+��I�
+	؝]۞�X\��[�]��M��Y[�ΌL��ؘX��ܛ�[��ٙ�����܎�����؛ܙ\���ۙN؛ܙ\�\�Y]\Ό�ٛ۝\�^�N�M\ٛ۝]�ZY������\��܎��[�\��I�
+	���[O��XY��
+	���O�[Y�ܘ�H��
+�]UT�
+�	ȏ��
+	��'��9�.�`��ए��ۙϺem���8�e����ۙϸ�e��i�����#9a�y�'��j�/�ykf8�#xऺ`n8���i��c��h8�ex�a����[��[OH��۝\�^�N��
+Y[N���܎��XXNȏ�ۙ�\�\��[XY�H8����]�H������[�����
+	��]ۈۘ�X��H��[��˘���J
+H��e�x�f8������O؝]ۏ��
+	�؛�O��[�
+N�]��[����[Y[�����J
+NH[�H��8��x������ਸ����������x������`��k�સ��8��8��8��8���ۜ�ݙ\�^HH��[Y[��ܙX]Q[[Y[�
+	�]��Nݙ\�^K��[K����^H	���][ێ��^Y����Y����Y�L	N�ZY��L	NؘX��ܛ�[���ؘJ�JNދZ[�^�NNNN�\�^N��^ٛ^Y\�X�[ێ���[[��[YۋZ][\Θ�[�\�ڝ\�Y�KX�۝[���[�\��Y[�Ό�؛�\�^�[�Θ�ܙ\�X�����ۜ�[Y�H��[Y[��ܙX]Q[[Y[�
+	�[Y��N[Y˜ܘ�H]UT�[Y˜�[K����^H	�X^]�Y�L	N�X^ZZY���]�؛ܙ\�\�Y]\ΌL����ۜ�\��H��[Y[��ܙX]Q[[Y[�
+	�	�N\�˚[��\�SH	�'��9�.�`��ए��ۙ��[OH���܎�ё�
+���em���8�e����ۙϸ�e��i�����#9a�y�'��j�/�ykf8�#xऺ`n8���i��c��h8�ex�a����[��[OH��۝\�^�N��
+Y[N��X�]N���ȏ�ۙ�\�\��8����]�H������[���\�˜�[K����^H	���܎��]N�X\��[�]��Nٛ۝\�^�N�M��^X[Yێ��[�\��[�KZZY��K�����ۜ����P��H��[Y[��ܙX]Q[[Y[�
+	؝]ۉ�N���P���^�۝[�H	�e�x�f8������I����P����[K����^H	�X\��[�]��M�Y[�ΌL�̜ؘX��ܛ�[���]N���܎�����؛ܙ\���ۙN؛ܙ\�\�Y]\Ό�ٛ۝\�^�N�M\ٛ۝]�ZY������\��܎��[�\������P���ۘ�X��H
+
+HO���[Y[����K��[[ݙP�[
+ݙ\�^JNݙ\�^K�\[�
+[Y�\�����P��N��[Y[����K�\[��[
+ݙ\�^JNB�H[�H����&�`&�n.8��8੸�����x��8��B��ۜ�\�HT��ܙX]Sؚ�X�T�
+�؊N�ۜ�HH��[Y[��ܙX]Q[[Y[�
+	�I�NK��Y�H\��K��ۛ�YH�[[�[YN�K��X��
+N�][Y[�]
+
+
+HO�T���]���Sؚ�X�T�
+\�
+KL
+NB�H�]�
+\��HY�
+\����[YHOOH	�X�ܝ\��܉�H[\�
+	��.�`���k�/�ykf8�j�i,y�e��e��o��e��gΈ	�
+�\���Y\��Y�JNB�JN���8�����8��9�.�gh��j�/�yb�8���T�l ��*8����8�;�"\��[;�"xऺe���c��[Y[���][[Y[��RY
+	؝�XYZ�YI�K�Y]�[�\�[�\�	��X���
+
+HO�Y�
+\�]K���[�\�]K��[YJH�]\����T�l ��*8����8�8�k�T�;�"8�����8��9�.�gh��j�/�yb�8�fx���k��d��k�T�;�"B��ۜ�\�Y�UT�H��][ۋ�ܚY�[�
+���][ۋ�]�[YK��\X�J�׋�J��	��H
+�	�\��[	
+�	��I�
+�[���UT�P��\ۙ[�
+�]K���[�B�
+�	ɛ�I�
+�[���UT�P��\ۙ[�
+�]K��[YJN��9��g*8�k������i�`m�����"8����8୸��8�k�\��[8�b��x�����8��9�.�gh�/�yb�8�i��cx���"B���][ۋ��Y�H\�Y�UT�JN����TN��:` y/�B���[Y[���][[Y[��RY
+	��\KY�ܛI�K�Y]�[�\�[�\�	��X�Z]	�\�[��
+JHO�K��]�[�Y�][
+
+N�YQ\��܊
+N�ۜ��[YHH��[Y[���][[Y[��RY
+	�[�][�[YI�K��[YK��[J
+N�ۜ�[XZ[H��[Y[���][[Y[��RY
+	�[�]Y[XZ[	�K��[YK��[J
+NY�
+[�[YHY[XZ[
+H�]\���]K��[YHH�[YN��]K�[XZ[H[XZ[YJ	��\K]�Y]��N�����Y[��	�*�z*/8����8��xऺ` y/�y.+K�����[�[�ˋ���N�H�ۜ��\�H]�Z]�]�
+T���ԒT�T�
+�	��X�[ۏ\�[��	��[YOI�
+�[���UT�P��\ۙ[�
+�[YJH
+�	ə[XZ[I�
+�[���UT�P��\ۙ[�
+[XZ[
+JN�ۜ�]HH]�Z]�\˚��ۊ
+NY�
+]K��\�[OOH	����H����]�\��܊]K�Y\��Y�H	�` y/�x�j�i,y�e��e��o��e��g��NYS�Y[��
+N����	��\�]�Y]��N��[Y[���][[Y[��RY
+	��\�[�Y[XZ[	�K�^�۝[�H[XZ[��[Y[���][[Y[��RY
+	��\�[�[\���K��[K�\�^HH	ٛ^	��\��[Y\�
+NH�]�
+\��H�YS�Y[��
+N����	��\K]�Y]��N����\��܊\���Y\��Y�JN�B�JN����T���9�':*/8����n�c,����[Y[���][[Y[��RY
+	��\�Y�ܛI�K�Y]�[�\�[�\�	��X�Z]	�\�[��
+JHO�K��]�[�Y�][
+
+N�YQ\��܊
+N�ۜ��H��[Y[���][[Y[��RY
+	�[�][�	�K��[YK��[J
+NY�
+[���[��OOH
+�H����\��܊	͹�`x�k�*�z*/8����8��xहaiyb���e��i��c��h8�ex�a8� ��X\�H[�\�H
+�YY�]��K��N��]\���B��ۜ���[�H�[�\�]UURQ
+
+N�]K���[�H��[�YJ	��\�]�Y]��N�����Y[��	�T�����8��xह�n�c,�.+K�����Y�\�\�[�ˋ���N�H�ۜ�\�HT���ԒT�T�
+�	��X�[ۏ\�Y�\�\�
+�	ɛ�[YOI�
+�[���UT�P��\ۙ[�
+�]K��[YJB�
+�	ə[XZ[I�
+�[���UT�P��\ۙ[�
+�]K�[XZ[
+B�
+�	ɝ��[�I�
+�[���UT�P��\ۙ[�
+��[�B�
+�	ɛ�I�
+�[���UT�P��\ۙ[�
+�
+N�ۜ��\�H]�Z]�]�
+\�
+N�ۜ�]HH]�Z]�\˚��ۊ
+NY�
+]K��\�[OOH	����H����]�\��܊]K�Y\��Y�H	��n�c,��j�i,y�e��e��o��e��g��N�X\�[�\��[
+�[Y\�[�\��[
+NYS�Y[��
+N���T��]K��[YK��[�NH�]�
+\��H�YS�Y[��
+N����	��\�]�Y]��N����\��܊\���Y\��Y�JN�B�JN��[��[ۈ���T��[YK��[�HYJ	��\K]�Y]��N�YJ	��\�]�Y]��N�YJ	��Y[��X��	�N���	��X��\��]�Y]��N��[Y[���][[Y[��RY
+	ܙ\�[[�[YKX�\�	�K�[��\�SH�[YH
+�	�8�ex���k�T��x������[��[OH��۝\�^�N���[Nٛ۝]�ZY�����܎��MMNȏ�[�\�\��ۘ[T��^O��[�����[Y[���][[Y[��RY
+	ܙ\�[]��[��K�^�۝[�H��[���[Y[���][[Y[��RY
+	�XY\�ZX�ۉ�K�^�۝[�H	��!I���[Y[���][[Y[��RY
+	�XY\�]]I�K�[��\�SH	��n�(c9k�9.��� O����[��[OH��۝\�^�N���[Nٛ۝]�ZY���\�^N������X\��[�]���ȏ�T��^H\��YYO��[�����[Y[���][[Y[��RY
+	�XY\�\�X��K�[��\�SH	�T��x��8ह�n�(c8�e��o��e��g�� �/�ykf8�e��i��c��h8�ex�a8� �����[��[OH��۝\�^�N��Y[N��X�]N��
+Nȏ�[�\�T��^H\��Y[�\��YY�X\�H�]�H]���[����][Y[�]
+
+
+HO��Z[T���[�KL
+N�]�U�\�
+�[YK��[�NB����9a�z` B���[Y[���][[Y[��RY
+	ܙ\�[�X���K�Y]�[�\�[�\�	��X���\�[��
+
+HO�YQ\��܊
+N��X\�[�\��[
+�[Y\�[�\��[
+N��[Y[���][[Y[��RY
+	�[�][�	�K��[YHH	��YJ	��\�]�Y]��N�����Y[��	�*�z*/8����8��xहa�z` y.+K�����\�[�[�ˋ���N�H�ۜ��\�H]�Z]�]�
+T���ԒT�T�
+�	��X�[ۏ\�[��	��[YOI�
+�[���UT�P��\ۙ[�
+�]K��[YJH
+�	ə[XZ[I�
+�[���UT�P��\ۙ[�
+�]K�[XZ[
+JN�ۜ�]HH]�Z]�\˚��ۊ
+NY�
+]K��\�[OOH	����H����]�\��܊]K�Y\��Y�H	�a�z` x�j�i,y�e��e��o��e��g��NYS�Y[��
+N����	��\�]�Y]��N��[Y[���][[Y[��RY
+	��\�[�[\���K��[K�\�^HH	ٛ^	��\��[Y\�
+NH�]�
+\��H�YS�Y[��
+N����	��\�]�Y]��N����\��܊\���Y\��Y�JN�B�JN��[��[ۈ�\�]�ܛJ
+H�X\�[�\��[
+�[Y\�[�\��[
+N�]HH��[YN�	��[XZ[�	����[��	��N\�ܞK��\X�T�]J�[	����][ۋ�]�[YJNYJ	��X��\��]�Y]��N�YJ	��\�]�Y]��N�YJ	��Y[��X��	�N�YQ\��܊
+N���	��\K]�Y]��N��[Y[���][[Y[��RY
+	��\KY�ܛI�K��\�]
+
+N��[Y[���][[Y[��RY
+	�[�][�	�K��[YHH	����[Y[���][[Y[��RY
+	��\�[�[\���K��[K�\�^HH	ۛۙI���[Y[���][[Y[��RY
+	��YKY�ZYI�K��[K�\�^HH	ۛۙI���[Y[���][[Y[��RY
+	�XY\�ZX�ۉ�K�^�۝[�H	�'�����[Y[���][[Y[��RY
+	�XY\�]]I�K�[��\�SH	�T��x��8ह�n�(c8�fx������[��[OH��۝\�^�N���[Nٛ۝]�ZY���\�^N������X\��[�]���ȏ�\��YH[�\�T��^O��[�����[Y[���][[Y[��RY
+	�XY\�\�X��K�[��\�SH	��b�d#ybcxहaiyb���e��i�� x�`��j��g�l ��*8�k�T��x��8ह�n�(c8�e��o��fx� �����[��[OH��۝\�^�N��Y[N��X�]N��
+Nȏ�[�\�[�\��[YH��X�Z]�HH\��ۘ[T��^K���[�����[Y[���][[Y[��RY
+	�\�X�[��\��K�[��\�SH	��B����8����8�8��x��8��y�`��j�T�8����������x�b��TT�o�ya`
+�[��[ۊ
+H�ۜ��]�YH�Y���R\�
+
+NY�
+�]�Y
+H�]K��[YHH�]�Y��[YN�]K���[�H�]�Y���[����T��]�Y��[YK�]�Y���[�NB�JJ
+N����H�\��X�H�ܚ�\��Y�
+	��\��X�U�ܚ�\��[��]�Y�]܊H�]�Y�]܋��\��X�U�ܚ�\���Y�\�\�	��˚���K��]�
+
+
+HO��JNB���ܚ\��؛�O���[�
