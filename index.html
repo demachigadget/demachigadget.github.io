@@ -286,267 +286,246 @@
     </div>
   </div>
 
-  <div class="footer-note">🔒 T��x��8�k�URQ8�i��y�!�� �.#y�h�b*y�*8�k�*&:c,�����(yb�yc%��i��cx�o��fx� ����T��^\�X[�Y�Y�HURQ�[�]]ܚ^�Y\�H�[��H�X��Y	�[\��]���Y��]�����ܚ\���ۜ�T���ԒT�T�H�΋���ܚ\�����K���K�XXܛ�����RٞX؞�Tњ�ڝ�ؓLS��PMPPXѝ]KU�]����ۙ�Q��\�P�M�[�����TZN�ӝ��^XȎ�]�]HH��[YN�	��[XZ[�	����[��	��N]�[Y\�[�\��[H�[]Y�\��Y[��[��\H�[����H8�8����x��8��8����8��x�����8स�x��������x����"���Y{�"B��[��˘Y]�[�\�[�\�	ؙY�ܙZ[��[��\	�
-JHO�K��]�[�Y�][
+  <div class="footer-note">🔒 QRキーはUUIDで管理。不正利用は記録・無効化できます。<br>QR keys managed by UUID. Unauthorized use can be tracked &amp; revoked.</div>
 
-NY�\��Y[��[��\HNJN��[��[ۈ�[�\�]UURQ
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZH1P3FjKjvCbM1N3MA5AAcFtP1tm-W1voSTb3nfEF6TQpjUBI4fDIn7koOqPai8j3Nw/exec";
 
-H�]\��	�^M^^^	˜�\X�J��WK���O��ۜ��HX]��[��J
-H
-�M��]\��
-�OOH	�	����
-�	��
-JK����[��M�NJNB���[��[ۈ���Y
-H���[Y[���][[Y[��RY
-Y
-K��[K�\�^HH	؛�����B��[��[ۈYJY
-H���[Y[���][[Y[��RY
-Y
-K��[K�\�^HH	ۛۙI��B��[��[ۈ��ћ^
-Y
-H���[Y[���][[Y[��RY
-Y
-K��[K�\�^HH	ٛ^	��B��[��[ۈ���\��܊\��H���[Y[���][[Y[��RY
-	�\��܋[\���K�^�۝[�H\�����ћ^
-	�\��܋X��	�N�B��[��[ۈYQ\��܊
-H�YJ	�\��܋X��	�N�B��[��[ۈ����Y[��\��H���[Y[���][[Y[��RY
-	��Y[��[\���K�^�۝[�H\��	�a��!�.+K��������	��Y[��X��	�N�B��[��[ۈYS�Y[��
-H�YJ	��Y[��X��	�N�B���[��[ۈ�\��[Y\�
-H�X\�[�\��[
-�[Y\�[�\��[
-N]�X�ۙ�H
-H
-�
-��ۜ�[Y\�[H��[Y[���][[Y[��RY
-	��][Y\��N�[��[ۈ\]J
-H�ۜ�HHX]���܊�X�ۙ��
-�
-K�H�X�ۙ�	H
-�[Y\�[�^�۝[�H	��"yb�y�'�fd�^\�\�[��	�
-�H
-�	Ή�
-���[���K�Y�\�
-�	�	�N[Y\�[��\�Ә[YHH	��][Y\��
-�
-�X�ۙ�H
-��	�^\�[����	��NY�
-�X�ۙ�H
-H��X\�[�\��[
-�[Y\�[�\��[
-N�[Y\�[�^�۝[�H	��"yb�y�'�fd9b!�����H^\�Y�X\�H�\�[����B��X�ۙ�KNB�\]J
-N�[Y\�[�\��[H�][�\��[
-\]KL
-NB���[��[ۈ�Z[T���[�H�ۜ�[H��[Y[���][[Y[��RY
-	�\�X�[��\��N[�[��\�SH	���]�T���J[�^���[��Y��ZY�����ܑ\�Έ	��PLPLPI���ܓY��	�ٙ�������ܜ�X�]�[�T���K��ܜ�X�]�[�HJNB����T�8����������x�j���8��8������j9d#ybcxह/�ykf8�e��i�o�ya`�[��[ۈ�]�U�\�
-�[YK��[�H�ۜ�\�H	��I�
-�[���UT�P��\ۙ[�
-��[�H
-�	ɛ�I�
-�[���UT�P��\ۙ[�
-�[YJN\�ܞK��\X�T�]J�[	��\�
-NB���[��[ۈ�Y���R\�
+    let state = { name: '', email: '', token: '' };
+    let otpTimerInterval = null;
+    let deferredInstallPrompt = null;
 
-H�ۜ�\�H��][ۋ�\���X�JJNY�
-Z\�
-H�]\���[�ۜ�\�[\�H�N\���]
-	ɉ�K��ܑXX�
-O���ۜ����HH��]
-	�I�N�\�[\���HHX��UT�P��\ۙ[�
-�	��N�JNY�
-\�[\˝	��\�[\˛�H�]\�����[��\�[\˝�[YN�\�[\˛�N�]\���[B����8����8��y�.�`��ह/�ykf���[Y[���][[Y[��RY
-	؝�\�]�KZ[XY�I�K�Y]�[�\�[�\�	��X���\�[��
+    // PWA インストールイベントをキャプチャ（Chrome）
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+    });
 
-HO��ۜ��\�H��[Y[���][[Y[��RY
-	�\�X�\�	�N�H�ۜ��[��\�H]�Z][��[��\��\����[N���X��ܛ�[���܎�	���P�Q�	�\�P�ԔΈ�YHJN�ۜ��؈H]�Z]�]���Z\�J�\�O��[��\˝Л؊�\�	�[XY�K����JN�ۜ��[[�[YHH
-�]K��[YH	�\��^I�H
-�	��T�)��c(8�x�������ۜ��[HH�]��[J؛ؗK�[[�[YK�\N�	�[XY�K����JN�ۜ�\�S��H�\ۙ_\Y\��K�\�
-�]�Y�]܋�\�\�Y�[�
-N����X��\�HT{�"S���Y�\�H8�j��j{�&���x�x�8����ly�"yk�o�8�k�h-9d";�"B�Y�
-�]�Y�]܋��\�H	���]�Y�]܋��[��\�H	���]�Y�]܋��[��\�J��[\Έٚ[WHJJH]�Z]�]�Y�]܋��\�J��[\Έٚ[WK]N�	�T�)��c(8�x��	�^��]K��[YH
-�	��ex���k�T�)��c(8�x��	�JNH[�HY�
-\�S��H��S�����Y{�&���8�e��a8�����j��.�`���h8�dz(j9�.�8���:em���8�e��i�/�ykf��ۜ�]UT�H�[��\˝�]UT�
-	�[XY�K����N�ۜ��]��[�H�[��˛�[�	��	�؛[���NY�
-�]��[�H�]��[����[Y[��ܚ]J�	�Q��TH[�[�XY��
-	�Y]H�\��]H�U�N���
-	�Y]H�[YOH��Y]�ܝ��۝[�H��YY]�X�K]�Y[�]X[\��[OLH���
-	�]O�T��.�`��ह/�ykfH	�
-�
-�]K��[YH	�T��H
-�	��]O��
-	��[O���^�X\��[��ؘX��ܛ�[���LLN�Z[�ZZY��L��\�^N��^ٛ^Y\�X�[ێ���[[��[YۋZ][\Θ�[�\�ڝ\�Y�KX�۝[���[�\��I�
-	�[Y��X^]�Y�L	N�X^ZZY���]�؛ܙ\�\�Y]\ΌL�؛�\�Y�Ό
-��ؘJ�JN�I�
-	����܎�ٙ���X\��[�]���ٛ۝\�^�N�M��^X[Yێ��[�\��[�KZZY��K���Y[�Ό��I�
-	���ۙ����܎�ё�
-��I�
-	؝]۞�X\��[�]��M��Y[�ΌL��ؘX��ܛ�[��ٙ�����܎�����؛ܙ\���ۙN؛ܙ\�\�Y]\Ό�ٛ۝\�^�N�M\ٛ۝]�ZY������\��܎��[�\��I�
-	���[O��XY��
-	���O�[Y�ܘ�H��
-�]UT�
-�	ȏ��
-	��'��9�.�`��ए��ۙϺem���8�e����ۙϸ�e��i�����#9a�y�'��j�/�ykf8�#xऺ`n8���i��c��h8�ex�a����[��[OH��۝\�^�N��
-Y[N���܎��XXNȏ�ۙ�\�\��[XY�H8����]�H������[�����
-	��]ۈۘ�X��H��[��˘���J
-H��e�x�f8������O؝]ۏ��
-	�؛�O��[�
-N�]��[����[Y[�����J
-NH[�H��8��x������ਸ����������x������`��k�સ��8��8��8��8���ۜ�ݙ\�^HH��[Y[��ܙX]Q[[Y[�
-	�]��Nݙ\�^K��[K����^H	���][ێ��^Y����Y����Y�L	N�ZY��L	NؘX��ܛ�[���ؘJ�JNދZ[�^�NNNN�\�^N��^ٛ^Y\�X�[ێ���[[��[YۋZ][\Θ�[�\�ڝ\�Y�KX�۝[���[�\��Y[�Ό�؛�\�^�[�Θ�ܙ\�X�����ۜ�[Y�H��[Y[��ܙX]Q[[Y[�
-	�[Y��N[Y˜ܘ�H]UT�[Y˜�[K����^H	�X^]�Y�L	N�X^ZZY���]�؛ܙ\�\�Y]\ΌL����ۜ�\��H��[Y[��ܙX]Q[[Y[�
-	�	�N\�˚[��\�SH	�'��9�.�`��ए��ۙ��[OH���܎�ё�
-���em���8�e����ۙϸ�e��i�����#9a�y�'��j�/�ykf8�#xऺ`n8���i��c��h8�ex�a����[��[OH��۝\�^�N��
-Y[N��X�]N���ȏ�ۙ�\�\��8����]�H������[���\�˜�[K����^H	���܎��]N�X\��[�]��Nٛ۝\�^�N�M��^X[Yێ��[�\��[�KZZY��K�����ۜ����P��H��[Y[��ܙX]Q[[Y[�
-	؝]ۉ�N���P���^�۝[�H	�e�x�f8������I����P����[K����^H	�X\��[�]��M�Y[�ΌL�̜ؘX��ܛ�[���]N���܎�����؛ܙ\���ۙN؛ܙ\�\�Y]\Ό�ٛ۝\�^�N�M\ٛ۝]�ZY������\��܎��[�\������P���ۘ�X��H
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
 
-HO���[Y[����K��[[ݙP�[
-ݙ\�^JNݙ\�^K�\[�
-[Y�\�����P��N��[Y[����K�\[��[
-ݙ\�^JNB�H[�H����&�`&�n.8��8੸�����x��8��B��ۜ�\�HT��ܙX]Sؚ�X�T�
-�؊N�ۜ�HH��[Y[��ܙX]Q[[Y[�
-	�I�NK��Y�H\��K��ۛ�YH�[[�[YN�K��X��
-N�][Y[�]
+    function show(id) { document.getElementById(id).style.display = 'block'; }
+    function hide(id) { document.getElementById(id).style.display = 'none'; }
+    function showFlex(id) { document.getElementById(id).style.display = 'flex'; }
+    function showError(msg) { document.getElementById('error-msg').textContent = msg; showFlex('error-box'); }
+    function hideError() { hide('error-box'); }
+    function showLoading(msg) { document.getElementById('loading-msg').textContent = msg || '処理中...'; show('loading-box'); }
+    function hideLoading() { hide('loading-box'); }
 
+    function startOtpTimer() {
+      clearInterval(otpTimerInterval);
+      let seconds = 5 * 60;
+      const timerEl = document.getElementById('otp-timer');
+      function update() {
+        const m = Math.floor(seconds / 60), s = seconds % 60;
+        timerEl.textContent = '有効期限 / Expires in: ' + m + ':' + String(s).padStart(2, '0');
+        timerEl.className = 'otp-timer' + (seconds <= 60 ? ' expiring' : '');
+        if (seconds <= 0) { clearInterval(otpTimerInterval); timerEl.textContent = '有効期限切れ / Code expired. Please resend.'; }
+        seconds--;
+      }
+      update();
+      otpTimerInterval = setInterval(update, 1000);
+    }
 
-HO�T���]���Sؚ�X�T�
-\�
-KL
-NB�H�]�
-\��HY�
-\����[YHOOH	�X�ܝ\��܉�H[\�
-	��.�`���k�/�ykf8�j�i,y�e��e��o��e��gΈ	�
-�\���Y\��Y�JNB�JN���8�����8��9�.�gh��j�/�yb�8���T�l ��*8����8�;�"\��[;�"xऺe���c��[Y[���][[Y[��RY
-	؝�XYZ�YI�K�Y]�[�\�[�\�	��X���
+    function buildQR(token) {
+      const el = document.getElementById('qr-canvas');
+      el.innerHTML = '';
+      new QRCode(el, { text: token, width: 200, height: 200, colorDark: '#1A1A1A', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+    }
 
-HO�Y�
-\�]K���[�\�]K��[YJH�]\����T�l ��*8����8�8�k�T�;�"8�����8��9�.�gh��j�/�yb�8�fx���k��d��k�T�;�"B��ۜ�\�Y�UT�H��][ۋ�ܚY�[�
-���][ۋ�]�[YK��\X�J�׋�J��	��H
-�	�\��[	
-�	��I�
-�[���UT�P��\ۙ[�
-�]K���[�B�
-�	ɛ�I�
-�[���UT�P��\ۙ[�
-�]K��[YJN��9��g*8�k������i�`m�����"8����8୸��8�k�\��[8�b��x�����8��9�.�gh�/�yb�8�i��cx���"B���][ۋ��Y�H\�Y�UT�JN����TN��:` y/�B���[Y[���][[Y[��RY
-	��\KY�ܛI�K�Y]�[�\�[�\�	��X�Z]	�\�[��
-JHO�K��]�[�Y�][
+    // URLハッシュにトークンと名前を保存して復元
+    function saveToHash(name, token) {
+      const hash = '#t=' + encodeURIComponent(token) + '&n=' + encodeURIComponent(name);
+      history.replaceState(null, '', hash);
+    }
 
-N�YQ\��܊
-N�ۜ��[YHH��[Y[���][[Y[��RY
-	�[�][�[YI�K��[YK��[J
-N�ۜ�[XZ[H��[Y[���][[Y[��RY
-	�[�]Y[XZ[	�K��[YK��[J
-NY�
-[�[YHY[XZ[
-H�]\���]K��[YHH�[YN��]K�[XZ[H[XZ[YJ	��\K]�Y]��N�����Y[��	�*�z*/8����8��xऺ` y/�y.+K�����[�[�ˋ���N�H�ۜ��\�H]�Z]�]�
-T���ԒT�T�
-�	��X�[ۏ\�[��	��[YOI�
-�[���UT�P��\ۙ[�
-�[YJH
-�	ə[XZ[I�
-�[���UT�P��\ۙ[�
-[XZ[
-JN�ۜ�]HH]�Z]�\˚��ۊ
-NY�
-]K��\�[OOH	����H����]�\��܊]K�Y\��Y�H	�` y/�x�j�i,y�e��e��o��e��g��NYS�Y[��
-N����	��\�]�Y]��N��[Y[���][[Y[��RY
-	��\�[�Y[XZ[	�K�^�۝[�H[XZ[��[Y[���][[Y[��RY
-	��\�[�[\���K��[K�\�^HH	ٛ^	��\��[Y\�
-NH�]�
-\��H�YS�Y[��
-N����	��\K]�Y]��N����\��܊\���Y\��Y�JN�B�JN����T���9�':*/8����n�c,����[Y[���][[Y[��RY
-	��\�Y�ܛI�K�Y]�[�\�[�\�	��X�Z]	�\�[��
-JHO�K��]�[�Y�][
+    function loadFromHash() {
+      const hash = location.hash.slice(1);
+      if (!hash) return null;
+      const params = {};
+      hash.split('&').forEach(p => { const [k,v] = p.split('='); params[k] = decodeURIComponent(v||''); });
+      if (params.t && params.n) return { token: params.t, name: params.n };
+      return null;
+    }
 
-N�YQ\��܊
-N�ۜ��H��[Y[���][[Y[��RY
-	�[�][�	�K��[YK��[J
-NY�
-[���[��OOH
-�H����\��܊	͹�`x�k�*�z*/8����8��xहaiyb���e��i��c��h8�ex�a8� ��X\�H[�\�H
-�YY�]��K��N��]\���B��ۜ���[�H�[�\�]UURQ
+    // カード画像を保存
+    document.getElementById('btn-save-image').addEventListener('click', async () => {
+      const card = document.getElementById('qr-card');
+      try {
+        const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#7ECEF4', useCORS: true });
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        const filename = (state.name || 'qrkey') + '_QR解錠キー.png';
+        const file = new File([blob], filename, { type: 'image/png' });
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
-N�]K���[�H��[�YJ	��\�]�Y]��N�����Y[��	�T�����8��xह�n�c,�.+K�����Y�\�\�[�ˋ���N�H�ۜ�\�HT���ԒT�T�
-�	��X�[ۏ\�Y�\�\�
-�	ɛ�[YOI�
-�[���UT�P��\ۙ[�
-�]K��[YJB�
-�	ə[XZ[I�
-�[���UT�P��\ۙ[�
-�]K�[XZ[
-B�
-�	ɝ��[�I�
-�[���UT�P��\ۙ[�
-��[�B�
-�	ɛ�I�
-�[���UT�P��\ۙ[�
-�
-N�ۜ��\�H]�Z]�]�
-\�
-N�ۜ�]HH]�Z]�\˚��ۊ
-NY�
-]K��\�[OOH	����H����]�\��܊]K�Y\��Y�H	��n�c,��j�i,y�e��e��o��e��g��N�X\�[�\��[
-�[Y\�[�\��[
-NYS�Y[��
-N���T��]K��[YK��[�NH�]�
-\��H�YS�Y[��
-N����	��\�]�Y]��N����\��܊\���Y\��Y�JN�B�JN��[��[ۈ���T��[YK��[�HYJ	��\K]�Y]��N�YJ	��\�]�Y]��N�YJ	��Y[��X��	�N���	��X��\��]�Y]��N��[Y[���][[Y[��RY
-	ܙ\�[[�[YKX�\�	�K�[��\�SH�[YH
-�	�8�ex���k�T��x������[��[OH��۝\�^�N���[Nٛ۝]�ZY�����܎��MMNȏ�[�\�\��ۘ[T��^O��[�����[Y[���][[Y[��RY
-	ܙ\�[]��[��K�^�۝[�H��[���[Y[���][[Y[��RY
-	�XY\�ZX�ۉ�K�^�۝[�H	��!I���[Y[���][[Y[��RY
-	�XY\�]]I�K�[��\�SH	��n�(c9k�9.��� O����[��[OH��۝\�^�N���[Nٛ۝]�ZY���\�^N������X\��[�]���ȏ�T��^H\��YYO��[�����[Y[���][[Y[��RY
-	�XY\�\�X��K�[��\�SH	�T��x��8ह�n�(c8�e��o��e��g�� �/�ykf8�e��i��c��h8�ex�a8� �����[��[OH��۝\�^�N��Y[N��X�]N��
-Nȏ�[�\�T��^H\��Y[�\��YY�X\�H�]�H]���[����][Y[�]
+        // Web Share API（iOS Safari など：ファイル共有対応の場合）
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'QR解錠キー', text: state.name + 'さんのQR解錠キー' });
+        } else if (isIOS) {
+          // iOS Chrome：新しいタブに画像だけ表示 → 長押しで保存
+          const dataURL = canvas.toDataURL('image/png');
+          const newWin = window.open('', '_blank');
+          if (newWin) {
+            newWin.document.write(
+              '<!DOCTYPE html><html><head>' +
+              '<meta charset="UTF-8">' +
+              '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+              '<title>QR画像を保存 - ' + (state.name || 'QR') + '</title>' +
+              '<style>body{margin:0;background:#111;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}' +
+              'img{max-width:90%;max-height:75vh;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.5);}' +
+              'p{color:#fff;margin-top:20px;font-size:16px;text-align:center;line-height:1.7;padding:0 20px;}' +
+              'strong{color:#FFD700;}' +
+              'button{margin-top:16px;padding:12px 28px;background:#fff;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;}' +
+              '</style></head>' +
+              '<body><img src="' + dataURL + '">' +
+              '<p>📸 画像を<strong>長押し</strong>して<br>「写真に保存」を選んでください<br><span style="font-size:0.85em;color:#aaa;">Long-press image → Save to Photos</span></p>' +
+              '<button onclick="window.close()">閉じる / Close</button>' +
+              '</body></html>'
+            );
+            newWin.document.close();
+          } else {
+            // ポップアップブロック時はオーバーレイ
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+            const img = document.createElement('img');
+            img.src = dataURL;
+            img.style.cssText = 'max-width:100%;max-height:65vh;border-radius:12px;';
+            const msg = document.createElement('p');
+            msg.innerHTML = '📸 画像を<strong style="color:#FFD700">長押し</strong>して<br>「写真に保存」を選んでください<br><span style="font-size:0.85em;opacity:0.7;">Long-press → Save to Photos</span>';
+            msg.style.cssText = 'color:white;margin-top:18px;font-size:16px;text-align:center;line-height:1.7;';
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '閉じる / Close';
+            closeBtn.style.cssText = 'margin-top:14px;padding:12px 32px;background:white;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;';
+            closeBtn.onclick = () => document.body.removeChild(overlay);
+            overlay.append(img, msg, closeBtn);
+            document.body.appendChild(overlay);
+          }
+        } else {
+          // PC：通常ダウンロード
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = filename; a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+      } catch (err) {
+        if (err.name !== 'AbortError') alert('画像の保存に失敗しました: ' + err.message);
+      }
+    });
 
+    // ホーム画面に追加 → QR専用ページ（qr.html）を開く
+    document.getElementById('btn-add-home').addEventListener('click', () => {
+      if (!state.token || !state.name) return;
+      // QR専用ページのURL（ホーム画面に追加するのはこのURL）
+      const qrPageURL = location.origin + location.pathname.replace(/[^/]*$/, '') + 'qr.html'
+        + '#t=' + encodeURIComponent(state.token)
+        + '&n=' + encodeURIComponent(state.name);
+      // 現在のタブで遷移（ユーザーはqr.htmlからホーム画面追加できる）
+      location.href = qrPageURL;
+    });
 
-HO��Z[T���[�KL
-N�]�U�\�
-�[YK��[�NB����9a�z` B���[Y[���][[Y[��RY
-	ܙ\�[�X���K�Y]�[�\�[�\�	��X���\�[��
+    // STEP 1: OTP送信
+    document.getElementById('step1-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); hideError();
+      const name  = document.getElementById('input-name').value.trim();
+      const email = document.getElementById('input-email').value.trim();
+      if (!name || !email) return;
+      state.name = name; state.email = email;
+      hide('step1-view'); showLoading('認証コードを送信中... / Sending...');
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL + '?action=sendOTP&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email));
+        const data = await res.json();
+        if (data.result !== 'ok') throw new Error(data.message || '送信に失敗しました');
+        hideLoading(); show('step2-view');
+        document.getElementById('otp-sent-email').textContent = email;
+        document.getElementById('otp-sent-msg').style.display = 'flex';
+        startOtpTimer();
+      } catch (err) { hideLoading(); show('step1-view'); showError(err.message); }
+    });
 
-HO�YQ\��܊
-N��X\�[�\��[
-�[Y\�[�\��[
-N��[Y[���][[Y[��RY
-	�[�][�	�K��[YHH	��YJ	��\�]�Y]��N�����Y[��	�*�z*/8����8��xहa�z` y.+K�����\�[�[�ˋ���N�H�ۜ��\�H]�Z]�]�
-T���ԒT�T�
-�	��X�[ۏ\�[��	��[YOI�
-�[���UT�P��\ۙ[�
-�]K��[YJH
-�	ə[XZ[I�
-�[���UT�P��\ۙ[�
-�]K�[XZ[
-JN�ۜ�]HH]�Z]�\˚��ۊ
-NY�
-]K��\�[OOH	����H����]�\��܊]K�Y\��Y�H	�a�z` x�j�i,y�e��e��o��e��g��NYS�Y[��
-N����	��\�]�Y]��N��[Y[���][[Y[��RY
-	��\�[�[\���K��[K�\�^HH	ٛ^	��\��[Y\�
-NH�]�
-\��H�YS�Y[��
-N����	��\�]�Y]��N����\��܊\���Y\��Y�JN�B�JN��[��[ۈ�\�]�ܛJ
-H�X\�[�\��[
-�[Y\�[�\��[
-N�]HH��[YN�	��[XZ[�	����[��	��N\�ܞK��\X�T�]J�[	����][ۋ�]�[YJNYJ	��X��\��]�Y]��N�YJ	��\�]�Y]��N�YJ	��Y[��X��	�N�YQ\��܊
-N���	��\K]�Y]��N��[Y[���][[Y[��RY
-	��\KY�ܛI�K��\�]
+    // STEP 2: OTP検証→登録
+    document.getElementById('step2-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); hideError();
+      const otp = document.getElementById('input-otp').value.trim();
+      if (!otp || otp.length !== 6) { showError('6桁の認証コードを入力してください。/ Please enter the 6-digit code.'); return; }
+      const token = generateUUID();
+      state.token = token;
+      hide('step2-view'); showLoading('QRコードを登録中... / Registering...');
+      try {
+        const url = APPS_SCRIPT_URL + '?action=register'
+          + '&name=' + encodeURIComponent(state.name)
+          + '&email=' + encodeURIComponent(state.email)
+          + '&token=' + encodeURIComponent(token)
+          + '&otp=' + encodeURIComponent(otp);
+        const res  = await fetch(url);
+        const data = await res.json();
+        if (data.result !== 'ok') throw new Error(data.message || '登録に失敗しました');
+        clearInterval(otpTimerInterval);
+        hideLoading();
+        showQR(state.name, token);
+      } catch (err) { hideLoading(); show('step2-view'); showError(err.message); }
+    });
 
-N��[Y[���][[Y[��RY
-	�[�][�	�K��[YHH	����[Y[���][[Y[��RY
-	��\�[�[\���K��[K�\�^HH	ۛۙI���[Y[���][[Y[��RY
-	��YKY�ZYI�K��[K�\�^HH	ۛۙI���[Y[���][[Y[��RY
-	�XY\�ZX�ۉ�K�^�۝[�H	�'�����[Y[���][[Y[��RY
-	�XY\�]]I�K�[��\�SH	�T��x��8ह�n�(c8�fx������[��[OH��۝\�^�N���[Nٛ۝]�ZY���\�^N������X\��[�]���ȏ�\��YH[�\�T��^O��[�����[Y[���][[Y[��RY
-	�XY\�\�X��K�[��\�SH	��b�d#ybcxहaiyb���e��i�� x�`��j��g�l ��*8�k�T��x��8ह�n�(c8�e��o��fx� �����[��[OH��۝\�^�N��Y[N��X�]N��
-Nȏ�[�\�[�\��[YH��X�Z]�HH\��ۘ[T��^K���[�����[Y[���][[Y[��RY
-	�\�X�[��\��K�[��\�SH	��B����8����8�8��x��8��y�`��j�T�8����������x�b��TT�o�ya`
-�[��[ۊ
-H�ۜ��]�YH�Y���R\�
+    function showQR(name, token) {
+      hide('step1-view'); hide('step2-view'); hide('loading-box');
+      show('success-view');
+      document.getElementById('result-name-card').innerHTML = name + ' さんのQRキー<br><span style="font-size:0.82em;font-weight:400;color:#555;">Your personal QR key</span>';
+      document.getElementById('result-token').textContent = token;
+      document.getElementById('header-icon').textContent  = '✅';
+      document.getElementById('header-title').innerHTML = '発行完了！<br><span style="font-size:0.6em;font-weight:400;display:block;margin-top:2px;">QR Key Issued!</span>';
+      document.getElementById('header-sub').innerHTML   = 'QRキーを発行しました。保存してください。<br><span style="font-size:0.9em;opacity:0.85;">Your QR key has been issued. Please save it.</span>';
+      setTimeout(() => buildQR(token), 100);
+      saveToHash(name, token);
+    }
 
-NY�
-�]�Y
-H�]K��[YHH�]�Y��[YN�]K���[�H�]�Y���[����T��]�Y��[YK�]�Y���[�NB�JJ
-N����H�\��X�H�ܚ�\��Y�
-	��\��X�U�ܚ�\��[��]�Y�]܊H�]�Y�]܋��\��X�U�ܚ�\���Y�\�\�	��˚���K��]�
+    // 再送
+    document.getElementById('resend-btn').addEventListener('click', async () => {
+      hideError(); clearInterval(otpTimerInterval);
+      document.getElementById('input-otp').value = '';
+      hide('step2-view'); showLoading('認証コードを再送中... / Resending...');
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL + '?action=sendOTP&name=' + encodeURIComponent(state.name) + '&email=' + encodeURIComponent(state.email));
+        const data = await res.json();
+        if (data.result !== 'ok') throw new Error(data.message || '再送に失敗しました');
+        hideLoading(); show('step2-view');
+        document.getElementById('otp-sent-msg').style.display = 'flex';
+        startOtpTimer();
+      } catch (err) { hideLoading(); show('step2-view'); showError(err.message); }
+    });
 
+    function resetForm() {
+      clearInterval(otpTimerInterval);
+      state = { name: '', email: '', token: '' };
+      history.replaceState(null, '', location.pathname);
+      hide('success-view'); hide('step2-view'); hide('loading-box'); hideError();
+      show('step1-view');
+      document.getElementById('step1-form').reset();
+      document.getElementById('input-otp').value = '';
+      document.getElementById('otp-sent-msg').style.display = 'none';
+      document.getElementById('home-guide').style.display = 'none';
+      document.getElementById('header-icon').textContent  = '📲';
+      document.getElementById('header-title').innerHTML = 'QRキーを発行する<br><span style="font-size:0.6em;font-weight:400;display:block;margin-top:2px;">Issue Your QR Key</span>';
+      document.getElementById('header-sub').innerHTML   = 'お名前を入力して、あなた専用のQRキーを発行します。<br><span style="font-size:0.9em;opacity:0.85;">Enter your name to receive a personal QR key.</span>';
+      document.getElementById('qr-canvas').innerHTML = '';
+    }
 
-HO��JNB���ܚ\��؛�O���[�
+    // ページロード時にURLハッシュからQR復元
+    (function() {
+      const saved = loadFromHash();
+      if (saved) {
+        state.name  = saved.name;
+        state.token = saved.token;
+        showQR(saved.name, saved.token);
+      }
+    })();
+
+    // PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
