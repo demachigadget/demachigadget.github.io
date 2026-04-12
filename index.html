@@ -182,11 +182,22 @@
         if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
           await navigator.share({files:[file],title:'QR解㞠キー',text:state.name+'さんのQR解㞠キー'});
         }else if(isIOS){
-          const url=URL.createObjectURL(blob);
-          window.open(url,'_blank');
-          alert('📸 画像を長押しして「写真に保存」を選んでください。');
-          setTimeout(()=>URL.revokeObjectURL(url),30000);
-        }else{
+          const dataURL=canvas.toDataURL('image/png');
+          const overlay=document.createElement('div');
+          overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+          const img=document.createElement('img');
+          img.src=dataURL;
+          img.style.cssText='max-width:100%;max-height:65vh;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.5);';
+          const msg=document.createElement('p');
+          msg.innerHTML='📸 画像を<strong style="color:#FFD700">長押し</strong>して<br>「写真に保存」を選んでください';
+          msg.style.cssText='color:white;margin-top:20px;font-size:17px;text-align:center;line-height:1.7;';
+          const closeBtn=document.createElement('button');
+          closeBtn.textContent='閉じる';
+          closeBtn.style.cssText='margin-top:20px;padding:12px 36px;background:white;color:#333;border:none;border-radius:24px;font-size:16px;font-weight:bold;cursor:pointer;';
+          closeBtn.onclick=()=>document.body.removeChild(overlay);
+          overlay.append(img,msg,closeBtn);
+          document.body.appendChild(overlay);
+        }}else{
           const url=URL.createObjectURL(blob);
           const a=document.createElement('a');
           a.href=url;a.download=filename;a.click();
@@ -197,29 +208,43 @@
       }
     });
     document.getElementById('btn-add-home').addEventListener('click',async()=>{
+      // Web Share API: 現在のURL（QRトークン入りhash）をそのまま共有 → ホーム画面追加でQRが直接開く
+      if(navigator.share){
+        try{
+          await navigator.share({
+            title:'QR解㞠キー'+(state.name?' - '+state.name:''),
+            text:'ホーム画面に追加してQRコードをすぐ開けます',
+            url:location.href
+          });
+          return;
+        }catch(e){if(e.name==='AbortError')return;}
+      }
+      // Android Chrome PWAインストール
+      if(deferredInstallPrompt){
+        await deferredInstallPrompt.prompt();
+        const{outcome}=await deferredInstallPrompt.userChoice;
+        if(outcome==='accepted'){deferredInstallPrompt=null;}
+        return;
+      }
+      // フォールバック：手順を表示
       const guide=document.getElementById('home-guide');
-      if(deferredInstallPrompt){await deferredInstallPrompt.prompt();const{outcome}=await deferredInstallPrompt.userChoice;if(outcome==='accepted')deferredInstallPrompt=null;return;}
+      const title=document.getElementById('home-guide-title');
+      const steps=document.getElementById('home-guide-steps');
       const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
       const isSafari=/safari/i.test(navigator.userAgent)&&!/chrome|crios|fxios/i.test(navigator.userAgent);
       const isChromeIOS=/crios/i.test(navigator.userAgent);
-      const title=document.getElementById('home-guide-title');
-      const steps=document.getElementById('home-guide-steps');
       if(isIOS&&isSafari){
         title.innerHTML='📱 Safari でホーム画面に追加する方法';
         steps.innerHTML='<li>画面下部の <strong>共有ボタン（□↑）</strong> をタップ</li><li>「<strong>ホーム画面に追加</strong>」を選択</li><li>右上の「<strong>追加</strong>」をタップ</li>';
       }else if(isIOS&&isChromeIOS){
         title.innerHTML='📱 Chrome でホーム画面に追加する方法';
         steps.innerHTML='<li>右下の <strong>「・・・」</strong> をタップ</li><li>「<strong>共有…</strong>」をタップ</li><li>「<strong>ホーム画面に追加</strong>」を選択</li><li>右上の「<strong>追加</strong>」をタップ</li>';
-      }else if(isIOS){
-        title.innerHTML='📱 ホーム画面に追加する方法';
-        steps.innerHTML='<li>ブラウザ右下の <strong>メニュー（・・・）</strong> をタップ</li><li>「<strong>共有</strong>」をタップ</li><li>「<strong>ホーム画面に追加</strong>」を選択</li>';
       }else{
         title.innerHTML='📱 ホーム画面への追加方法';
         steps.innerHTML='<li>ブラウザのメニュー（⋮）を開く</li><li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択</li><li>画面の指示に従ってください</li>';
       }
       guide.style.display=guide.style.display==='block'?'none':'block';
-    });
-    document.getElementById('step1-form').addEventListener('submit',async(e)=>{
+    });    document.getElementById('step1-form').addEventListener('submit',async(e)=>{
       e.preventDefault();hideError();
       const name=document.getElementById('input-name').value.trim();
       const email=document.getElementById('input-email').value.trim();
