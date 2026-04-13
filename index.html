@@ -416,15 +416,49 @@
       }
     });
 
-    // ホーム画面に追加 → QR専用ページ（qr.html）を開く
+    // ホーム画面に追加
     document.getElementById('btn-add-home').addEventListener('click', () => {
       if (!state.token || !state.name) return;
-      // QR専用ページのURL（ホーム画面に追加するのはこのURL）
       const qrPageURL = location.origin + location.pathname.replace(/[^/]*$/, '') + 'qr.html'
         + '#t=' + encodeURIComponent(state.token)
         + '&n=' + encodeURIComponent(state.name);
-      // 現在のタブで遷移（ユーザーはqr.htmlからホーム画面追加できる）
-      location.href = qrPageURL;
+
+      const isIOS      = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isSafari   = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
+      const isChromeIOS = /crios/i.test(navigator.userAgent);
+      const guide      = document.getElementById('home-guide');
+      const guideTitle = document.getElementById('home-guide-title');
+      const guideSteps = document.getElementById('home-guide-steps');
+
+      // iOS Safari: navigator.share でシェアシートを開く（ページ遷移なし）
+      if (isIOS && isSafari && navigator.share) {
+        navigator.share({ title: 'QR解錠キー - ' + state.name, url: qrPageURL }).catch(() => {});
+        return;
+      }
+
+      // ガイドを表示（ページ遷移なし）
+      guide.style.display = 'block';
+      guide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      if (isChromeIOS) {
+        guideTitle.textContent = '὏1 ホーム画面に追加する方法 (Chrome) / Add to Home Screen';
+        guideSteps.innerHTML =
+          '<li>下のURLをSafariで開いてください：<br><small>Open the URL below in Safari:</small></li>' +
+          '<div style="background:#1A1A1A;color:#FFD93D;font-family:monospace;font-size:0.72rem;border-radius:8px;padding:10px 14px;word-break:break-all;margin:8px 0;user-select:all;">' + qrPageURL + '</div>' +
+          '<li>Safariで開いたら下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>In Safari, tap the <strong>Share (□↑)</strong> button</small></li>' +
+          '<li>「<strong>ホーム画面に追加</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>"</small></li>';
+      } else if (isIOS) {
+        guideTitle.textContent = '὏1 ホーム画面に追加する / Add to Home Screen';
+        guideSteps.innerHTML =
+          '<li>画面下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>Tap the <strong>Share button (□↑)</strong> at the bottom</small></li>' +
+          '<li>「<strong>ホーム画面に追加</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>"</small></li>' +
+          '<li>右上の「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>" in the upper right</small></li>';
+      } else {
+        guideTitle.textContent = '὏1 ホーム画面への追加方法 / Add to Home Screen';
+        guideSteps.innerHTML =
+          '<li>ブラウザのメニュー（⋮）を開く<br><small>Open the browser menu (⋮)</small></li>' +
+          '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>" or "<strong>Install App</strong>"</small></li>';
+      }
     });
 
     // STEP 1: OTP送信
