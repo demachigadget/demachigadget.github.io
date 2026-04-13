@@ -204,11 +204,11 @@
             <input type="text" class="form-input" id="input-name" placeholder="例：山田 太郎" required maxlength="64" autocomplete="name" />
           </div>
           <div style="margin-bottom:24px;">
-            <div class="field-label"><span class="label-icon">�	️</span>メール �+スバドレス / Email<span class="tag-required">必須 Required</span></div>
+            <div class="field-label"><span class="label-icon">✉️</span>メールアドレス / Email<span class="tag-required">必須 Required</span></div>
             <input type="email" class="form-input" id="input-email" placeholder="例：taro@gmail.com" required maxlength="128" autocomplete="email" />
           </div>
           <button type="submit" class="btn-primary" style="flex-direction:column;gap:2px;">
-            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">📨</span>認証コードを送か</span>
+            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">📨</span>認証コードを送る</span>
             <span style="font-size:0.8em;font-weight:400;opacity:0.85;">Send Verification Code</span>
           </button>
         </form>
@@ -285,7 +285,7 @@
     </div>
   </div>
 
-  <div class="footer-note">🔒 QRキーはUUIDで管理。不正利用は記録・無効化できまし。<br>QR keys managed by UUID. Unauthorized use can be tracked &amp; revoked.</div>
+  <div class="footer-note">🔒 QRキーはUUIDで管理。不正利用は記録・無効化できます。<br>QR keys managed by UUID. Unauthorized use can be tracked &amp; revoked.</div>
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZH1P3FjKjvCbM1N3MA5AAcFtP1tm-W1voSTb3nfEF6TQpjUBI4fDIn7koOqPai8j3Nw/exec";
@@ -294,7 +294,7 @@
     let otpTimerInterval = null;
     let deferredInstallPrompt = null;
 
-    // PWA インストールイベントをキャプチャ（Chrome）
+    // PWA インストルイベントをキャプチャ（Chrome）
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredInstallPrompt = e;
@@ -389,7 +389,7 @@
       const qrEl  = document.getElementById('qr-canvas');
       const qrSrc = qrEl.querySelector('canvas') || qrEl.querySelector('img');
       if (!qrSrc) {
-        alert('QRコードの読み込みが完了していません。少し待ってから再度お試しください。\nQR code is still loading. Please wait and try again.');
+        alert('QRコードの読み込みが完了していません。少し待ってかり再度お試しください。\nQR code is still loading. Please wait and try again.');
         return;
       }
 
@@ -422,8 +422,8 @@
       // 名前
       ctx.fillStyle = '#1A1A1A';
       ctx.font = 'bold 15px sans-serif';
-      ctx.fillText((state.name || '') + 'さんのQR解錠キー', W/2, 72);
-      ctx.fillStyle = '#666'';
+      ctx.fillText((state.name || '') + ' さんのQRキー', W/2, 72);
+      ctx.fillStyle = '#666';
       ctx.font = '11px sans-serif';
       ctx.fillText('Your personal QR key', W/2, 86);
 
@@ -464,7 +464,7 @@
             }
           }, 'image/png');
         } else {
-          // iOS Chrome: オーバーレイ表示 → 画像ゑ長押しして保存
+          // iOS Chrome: オーバーレイ表示 → 画像を長押しして保存
           showSaveOverlay(dataURL);
         }
         return;
@@ -504,7 +504,7 @@
       guide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       if (isChromeIOS) {
-        // iOS Chrome: 新しいタブでQRページを開き、Chromeメニューから追加
+        // iOS Chrome: 新しいタブでQRページゑ開き、Chromeメニューから追加
         const newWin = window.open(qrPageURL, '_blank');
         guideTitle.textContent = '📱 Chrome でホーム画面に追加する方法';
         if (newWin) {
@@ -591,7 +591,7 @@
       document.getElementById('result-token').textContent = token;
       document.getElementById('header-icon').textContent  = '✅';
       document.getElementById('header-title').innerHTML = '発行完了！<br><span style="font-size:0.6em;font-weight:400;display:block;margin-top:2px;">QR Key Issued!</span>';
-      document.getElementById('header-sub').innerHTML   = 'QRキーを発行しました。保存してください<br><span style="font-size:0.9em;opacity:0.85;">Your QR key has been issued. Please save it.</span>';
+      document.getElementById('header-sub').innerHTML   = 'QRキーを発行しました。保存してください。<br><span style="font-size:0.9em;opacity:0.85;">Your QR key has been issued. Please save it.</span>';
       setTimeout(() => buildQR(token), 100);
       saveToHash(name, token);
     }
