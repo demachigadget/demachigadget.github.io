@@ -204,7 +204,7 @@
             <input type="text" class="form-input" id="input-name" placeholder="例：山田 太郎" required maxlength="64" autocomplete="name" />
           </div>
           <div style="margin-bottom:24px;">
-            <div class="field-label"><span class="label-icon">✉️</span>メールアドレス / Email<span class="tag-required">必須 Required</span></div>
+            <div class="field-label"><span class="label-icon">�	️</span>メールアドレス / Email<span class="tag-required">必須 Required</span></div>
             <input type="email" class="form-input" id="input-email" placeholder="例：taro@gmail.com" required maxlength="128" autocomplete="email" />
           </div>
           <button type="submit" class="btn-primary" style="flex-direction:column;gap:2px;">
@@ -216,7 +216,7 @@
         <div class="steps-title">📖 使い方 / HOW TO USE</div>
         <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>お名前・メールを入力してコードを送る</strong><span>Enter name &amp; email, then send verification code</span></div></div>
         <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>届いた6桁のコードを入力してQRを発行</strong><span>Enter the 6-digit code from your email</span></div></div>
-        <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>QRコードをドアのスキャナーにかざして解錠</strong><span>Hold QR code to the door scanner to unlock</span></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>QRコードをドアのスキャアーにかざして解錠</strong><span>Hold QR code to the door scanner to unlock</span></div></div>
       </div>
 
       <!-- STEP 2 -->
@@ -294,7 +294,7 @@
     let otpTimerInterval = null;
     let deferredInstallPrompt = null;
 
-    // PWA インストルイベントをキャプチャ（Chrome）
+    // PWA インストールイベントをキャプチャ（Chrome）
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredInstallPrompt = e;
@@ -389,7 +389,7 @@
       const qrEl  = document.getElementById('qr-canvas');
       const qrSrc = qrEl.querySelector('canvas') || qrEl.querySelector('img');
       if (!qrSrc) {
-        alert('QRコードの読み込みが完了していません。少し待ってかり再度お試しください。\nQR code is still loading. Please wait and try again.');
+        alert('QRコードの読み込みが完了していません。少し待ってかよ再度お試しください。\nQR code is still loading. Please wait and try again.');
         return;
       }
 
@@ -464,7 +464,7 @@
             }
           }, 'image/png');
         } else {
-          // iOS Chrome: オーバーレイ表示 → 画像を長押しして保存
+          // iOS Chrome: オーバーレイ表示 → 画像り長押しして保存
           showSaveOverlay(dataURL);
         }
         return;
@@ -494,7 +494,7 @@
       const guideTitle  = document.getElementById('home-guide-title');
       const guideSteps  = document.getElementById('home-guide-steps');
 
-      // Chrome（デスクトップ/Android）: インストールプロンプトが使える場合
+      // Chrome（デスクトップ/Android）: インストールプロンプトが使いる場合
       if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
         return;
@@ -504,14 +504,14 @@
       guide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       if (isChromeIOS) {
-        // iOS Chrome: 新しいタブでQRページゑ開き、Chromeメニューから追加
+        // iOS Chrome: 新しいタブでQRページオ開き、Chromeメニューから追加
         const newWin = window.open(qrPageURL, '_blank');
         guideTitle.textContent = '📱 Chrome でホーム画面に追加する方法';
         if (newWin) {
           guideSteps.innerHTML =
             '<li>新しいタブでQRキーページが開きました<br><small>QR key page opened in a new tab</small></li>' +
             '<li>Chrome の右上 <strong>メニュー（⋮）</strong> をタップ<br><small>Tap the <strong>menu (⋮)</strong> in Chrome</small></li>' +
-            '<li>「<strong>ホーム画面に追加</strong>」を選択 → 「追加」をタップ<br><small>Select "<strong>Add to Home Screen</strong>" → Tap "Add"</small></li>';
+            '<li>「<strong>ホーム画面に追加</strong>」ゑ選択 → 「追加」をタップ<br><small>Select "<strong>Add to Home Screen</strong>" → Tap "Add"</small></li>';
         } else {
           guideSteps.innerHTML =
             '<li>下のURLをChromeで開いてください：<br><small>Open the URL below in Chrome:</small></li>' +
@@ -527,12 +527,10 @@
           '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>" or "<strong>Install App</strong>"</small></li>' +
           '<li>「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>"</small></li>';
       } else if (isIOS && isSafari) {
-        // Safari（サブ）
-        guideTitle.textContent = '📱 Safari でホーム画面に追加する方法';
-        guideSteps.innerHTML =
-          '<li>画面下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>Tap the <strong>Share button (□↑)</strong> at the bottom</small></li>' +
-          '<li>「<strong>ホーム画面に追加</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>"</small></li>' +
-          '<li>右上の「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>" in the upper right</small></li>';
+        // Safari: ハッシュ付きの qr.html へ移動してからホーム画面に追加させる
+        // （iOS は Safari と PWA で localStorage が分離されるため URL ハッシュが唯一の信頼できる手段）
+        window.location.href = qrPageURL;
+        return;
       } else {
         guideTitle.textContent = '📱 ホーム画面への追加方法';
         guideSteps.innerHTML =
