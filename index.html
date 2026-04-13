@@ -10,7 +10,6 @@
   <meta name="robots" content="noindex, nofollow" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
     :root {
       --sky:    #7ECEF4;
@@ -205,11 +204,11 @@
             <input type="text" class="form-input" id="input-name" placeholder="例：山田 太郎" required maxlength="64" autocomplete="name" />
           </div>
           <div style="margin-bottom:24px;">
-            <div class="field-label"><span class="label-icon">✉️</span>メールアドレス / Email<span class="tag-required">必須 Required</span></div>
+            <div class="field-label"><span class="label-icon">�	️</span>メール �+スバドレス / Email<span class="tag-required">必須 Required</span></div>
             <input type="email" class="form-input" id="input-email" placeholder="例：taro@gmail.com" required maxlength="128" autocomplete="email" />
           </div>
           <button type="submit" class="btn-primary" style="flex-direction:column;gap:2px;">
-            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">📨</span>認証コードを送る</span>
+            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">📨</span>認証コードを送か</span>
             <span style="font-size:0.8em;font-weight:400;opacity:0.85;">Send Verification Code</span>
           </button>
         </form>
@@ -286,7 +285,7 @@
     </div>
   </div>
 
-  <div class="footer-note">🔒 QRキーはUUIDで管理。不正利用は記録・無効化できます。<br>QR keys managed by UUID. Unauthorized use can be tracked &amp; revoked.</div>
+  <div class="footer-note">🔒 QRキーはUUIDで管理。不正利用は記録・無効化できまし。<br>QR keys managed by UUID. Unauthorized use can be tracked &amp; revoked.</div>
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZH1P3FjKjvCbM1N3MA5AAcFtP1tm-W1voSTb3nfEF6TQpjUBI4fDIn7koOqPai8j3Nw/exec";
@@ -352,112 +351,194 @@
       return null;
     }
 
-    // カード画像を保存
-    document.getElementById('btn-save-image').addEventListener('click', async () => {
-      const card = document.getElementById('qr-card');
-      try {
-        const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#7ECEF4', useCORS: true });
-        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-        const filename = (state.name || 'qrkey') + '_QR解錠キー.png';
-        const file = new File([blob], filename, { type: 'image/png' });
-        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    // roundRect helper（iOS 15以前用）
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
 
-        // Web Share API（iOS Safari など：ファイル共有対応の場合）
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'QR解錠キー', text: state.name + 'さんのQR解錠キー' });
-        } else if (isIOS) {
-          // iOS Chrome：新しいタブに画像だけ表示 → 長押しで保存
-          const dataURL = canvas.toDataURL('image/png');
-          const newWin = window.open('', '_blank');
-          if (newWin) {
-            newWin.document.write(
-              '<!DOCTYPE html><html><head>' +
-              '<meta charset="UTF-8">' +
-              '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-              '<title>QR画像を保存 - ' + (state.name || 'QR') + '</title>' +
-              '<style>body{margin:0;background:#111;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}' +
-              'img{max-width:90%;max-height:75vh;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.5);}' +
-              'p{color:#fff;margin-top:20px;font-size:16px;text-align:center;line-height:1.7;padding:0 20px;}' +
-              'strong{color:#FFD700;}' +
-              'button{margin-top:16px;padding:12px 28px;background:#fff;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;}' +
-              '</style></head>' +
-              '<body><img src="' + dataURL + '">' +
-              '<p>📸 画像を<strong>長押し</strong>して<br>「写真に保存」を選んでください<br><span style="font-size:0.85em;color:#aaa;">Long-press image → Save to Photos</span></p>' +
-              '<button onclick="window.close()">閉じる / Close</button>' +
-              '</body></html>'
-            );
-            newWin.document.close();
-          } else {
-            // ポップアップブロック時はオーバーレイ
-            const overlay = document.createElement('div');
-            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
-            const img = document.createElement('img');
-            img.src = dataURL;
-            img.style.cssText = 'max-width:100%;max-height:65vh;border-radius:12px;';
-            const msg = document.createElement('p');
-            msg.innerHTML = '📸 画像を<strong style="color:#FFD700">長押し</strong>して<br>「写真に保存」を選んでください<br><span style="font-size:0.85em;opacity:0.7;">Long-press → Save to Photos</span>';
-            msg.style.cssText = 'color:white;margin-top:18px;font-size:16px;text-align:center;line-height:1.7;';
-            const closeBtn = document.createElement('button');
-            closeBtn.textContent = '閉じる / Close';
-            closeBtn.style.cssText = 'margin-top:14px;padding:12px 32px;background:white;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;';
-            closeBtn.onclick = () => document.body.removeChild(overlay);
-            overlay.append(img, msg, closeBtn);
-            document.body.appendChild(overlay);
-          }
-        } else {
-          // PC：通常ダウンロード
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url; a.download = filename; a.click();
-          setTimeout(() => URL.revokeObjectURL(url), 1000);
-        }
-      } catch (err) {
-        if (err.name !== 'AbortError') alert('画像の保存に失敗しました: ' + err.message);
+    // オーバーレイ（フォールバック）
+    function showSaveOverlay(dataURL) {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+      const img = document.createElement('img');
+      img.src = dataURL;
+      img.style.cssText = 'max-width:100%;max-height:62vh;border-radius:12px;';
+      const msg = document.createElement('p');
+      msg.innerHTML = '📸 画像を<strong style="color:#FFD700">長押し</strong>して<br>「写真に保存」を選んでください<br><span style="font-size:0.85em;opacity:0.7;">Long-press → Save to Photos</span>';
+      msg.style.cssText = 'color:white;margin-top:18px;font-size:16px;text-align:center;line-height:1.7;';
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '閉じる / Close';
+      closeBtn.style.cssText = 'margin-top:14px;padding:12px 32px;background:white;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;';
+      closeBtn.onclick = function() { document.body.removeChild(overlay); };
+      overlay.append(img, msg, closeBtn);
+      document.body.appendChild(overlay);
+    }
+
+    // カード画像を保存（ネイティブCanvas）
+    document.getElementById('btn-save-image').addEventListener('click', function() {
+      const qrEl  = document.getElementById('qr-canvas');
+      const qrSrc = qrEl.querySelector('canvas') || qrEl.querySelector('img');
+      if (!qrSrc) {
+        alert('QRコードの読み込みが完了していません。少し待ってから再度お試しください。\nQR code is still loading. Please wait and try again.');
+        return;
       }
+
+      const isIOS    = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
+
+      const W = 300, H = 410;
+      const oc = document.createElement('canvas');
+      oc.width = W; oc.height = H;
+      const ctx = oc.getContext('2d');
+
+      // 背景（空色）
+      ctx.fillStyle = '#7ECEF4';
+      ctx.fillRect(0, 0, W, H);
+
+      // 白いカード内枠
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, 12, 12, W-24, H-24, 12);
+      ctx.fill();
+
+      // ヘッダー
+      ctx.fillStyle = '#2E7D2E';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('出町ガジェット / Demachi Gadget', W/2, 40);
+      ctx.fillStyle = '#555';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('QRキー / QR Key', W/2, 54);
+
+      // 名前
+      ctx.fillStyle = '#1A1A1A';
+      ctx.font = 'bold 15px sans-serif';
+      ctx.fillText((state.name || '') + 'さんのQR解錠キー', W/2, 72);
+      ctx.fillStyle = '#666'';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('Your personal QR key', W/2, 86);
+
+      // QR画像を描画
+      const qrSize = 190;
+      const qrX = (W - qrSize) / 2;
+      const qrY = 100;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(qrX - 6, qrY - 6, qrSize + 12, qrSize + 12);
+      ctx.drawImage(qrSrc, qrX, qrY, qrSize, qrSize);
+
+      // フッター
+      ctx.fillStyle = '#3A9B3A';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('ドアのスキャナーにかざして解錠', W/2, qrY + qrSize + 22);
+      ctx.fillStyle = '#777';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('Hold up to the door scanner to unlock', W/2, qrY + qrSize + 36);
+
+      // ロゴ
+      ctx.fillStyle = '#888888';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('demachigadget.github.io', W/2, H - 18);
+
+      const dataURL = oc.toDataURL('image/png');
+
+      if (isIOS) {
+        if (isSafari) {
+          // iOS Safari: Web Share API でシェアシート → 写真アプリへ保存
+          oc.toBlob(function(blob) {
+            const filename = (state.name || 'qrkey') + '_QR解錠キー.png';
+            const file = new File([blob], filename, { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              navigator.share({ files: [file], title: 'QR解錠キー', text: (state.name || '') + 'さんのQR解錠キー' })
+                .catch(function(e) { if (e.name !== 'AbortError') showSaveOverlay(dataURL); });
+            } else {
+              showSaveOverlay(dataURL);
+            }
+          }, 'image/png');
+        } else {
+          // iOS Chrome: オーバーレイ表示 → 画像ゑ長押しして保存
+          showSaveOverlay(dataURL);
+        }
+        return;
+      }
+
+      // PC・その他: ダウンロード
+      const a = document.createElement('a');
+      a.href = dataURL;
+      a.download = (state.name || 'qrkey') + '_QR解錠キー.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     });
 
     // ホーム画面に追加
-    document.getElementById('btn-add-home').addEventListener('click', () => {
+    document.getElementById('btn-add-home').addEventListener('click', function() {
       if (!state.token || !state.name) return;
       const qrPageURL = location.origin + location.pathname.replace(/[^/]*$/, '') + 'qr.html'
         + '#t=' + encodeURIComponent(state.token)
         + '&n=' + encodeURIComponent(state.name);
 
-      const isIOS      = /iphone|ipad|ipod/i.test(navigator.userAgent);
-      const isSafari   = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
+      const isIOS       = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isSafari    = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
       const isChromeIOS = /crios/i.test(navigator.userAgent);
-      const guide      = document.getElementById('home-guide');
-      const guideTitle = document.getElementById('home-guide-title');
-      const guideSteps = document.getElementById('home-guide-steps');
+      const isChrome    = /chrome/i.test(navigator.userAgent) && !/edge|opr\//i.test(navigator.userAgent);
+      const guide       = document.getElementById('home-guide');
+      const guideTitle  = document.getElementById('home-guide-title');
+      const guideSteps  = document.getElementById('home-guide-steps');
 
-      // iOS Safari: navigator.share でシェアシートを開く（ページ遷移なし）
-      if (isIOS && isSafari && navigator.share) {
-        navigator.share({ title: 'QR解錠キー - ' + state.name, url: qrPageURL }).catch(() => {});
+      // Chrome（デスクトップ/Android）: インストールプロンプトが使える場合
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
         return;
       }
 
-      // ガイドを表示（ページ遷移なし）
       guide.style.display = 'block';
       guide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       if (isChromeIOS) {
-        guideTitle.textContent = '὏1 ホーム画面に追加する方法 (Chrome) / Add to Home Screen';
+        // iOS Chrome: 新しいタブでQRページを開き、Chromeメニューから追加
+        const newWin = window.open(qrPageURL, '_blank');
+        guideTitle.textContent = '📱 Chrome でホーム画面に追加する方法';
+        if (newWin) {
+          guideSteps.innerHTML =
+            '<li>新しいタブでQRキーページが開きました<br><small>QR key page opened in a new tab</small></li>' +
+            '<li>Chrome の右上 <strong>メニュー（⋮）</strong> をタップ<br><small>Tap the <strong>menu (⋮)</strong> in Chrome</small></li>' +
+            '<li>「<strong>ホーム画面に追加</strong>」を選択 → 「追加」をタップ<br><small>Select "<strong>Add to Home Screen</strong>" → Tap "Add"</small></li>';
+        } else {
+          guideSteps.innerHTML =
+            '<li>下のURLをChromeで開いてください：<br><small>Open the URL below in Chrome:</small></li>' +
+            '<div style="background:#1A1A1A;color:#FFD93D;font-family:monospace;font-size:0.72rem;border-radius:8px;padding:10px 14px;word-break:break-all;margin:8px 0;user-select:all;">' + qrPageURL + '</div>' +
+            '<li>Chrome の <strong>メニュー（⋮）</strong> をタップ<br><small>Tap the Chrome <strong>menu (⋮)</strong></small></li>' +
+            '<li>「<strong>ホーム画面に追加</strong>」を選択 → 「追加」をタップ<br><small>Select "<strong>Add to Home Screen</strong>" → Tap "Add"</small></li>';
+        }
+      } else if (!isIOS && isChrome) {
+        // デスクトップ/Android Chrome
+        guideTitle.textContent = '📱 Chrome でホーム画面に追加する方法';
         guideSteps.innerHTML =
-          '<li>下のURLをSafariで開いてください：<br><small>Open the URL below in Safari:</small></li>' +
-          '<div style="background:#1A1A1A;color:#FFD93D;font-family:monospace;font-size:0.72rem;border-radius:8px;padding:10px 14px;word-break:break-all;margin:8px 0;user-select:all;">' + qrPageURL + '</div>' +
-          '<li>Safariで開いたら下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>In Safari, tap the <strong>Share (□↑)</strong> button</small></li>' +
-          '<li>「<strong>ホーム画面に追加</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>"</small></li>';
-      } else if (isIOS) {
-        guideTitle.textContent = '὏1 ホーム画面に追加する / Add to Home Screen';
+          '<li>ブラウザ右上の <strong>メニュー（⋮）</strong> をタップ<br><small>Tap the <strong>menu (⋮)</strong> at top right</small></li>' +
+          '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>" or "<strong>Install App</strong>"</small></li>' +
+          '<li>「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>"</small></li>';
+      } else if (isIOS && isSafari) {
+        // Safari（サブ）
+        guideTitle.textContent = '📱 Safari でホーム画面に追加する方法';
         guideSteps.innerHTML =
           '<li>画面下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>Tap the <strong>Share button (□↑)</strong> at the bottom</small></li>' +
           '<li>「<strong>ホーム画面に追加</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>"</small></li>' +
           '<li>右上の「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>" in the upper right</small></li>';
       } else {
-        guideTitle.textContent = '὏1 ホーム画面への追加方法 / Add to Home Screen';
+        guideTitle.textContent = '📱 ホーム画面への追加方法';
         guideSteps.innerHTML =
           '<li>ブラウザのメニュー（⋮）を開く<br><small>Open the browser menu (⋮)</small></li>' +
-          '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>" or "<strong>Install App</strong>"</small></li>';
+          '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>" or "<strong>Install App</strong>"</small></li>' +
+          '<li>画面の指示に従ってください<br><small>Follow the on-screen instructions</small></li>';
       }
     });
 
@@ -510,7 +591,7 @@
       document.getElementById('result-token').textContent = token;
       document.getElementById('header-icon').textContent  = '✅';
       document.getElementById('header-title').innerHTML = '発行完了！<br><span style="font-size:0.6em;font-weight:400;display:block;margin-top:2px;">QR Key Issued!</span>';
-      document.getElementById('header-sub').innerHTML   = 'QRキーを発行しました。保存してください。<br><span style="font-size:0.9em;opacity:0.85;">Your QR key has been issued. Please save it.</span>';
+      document.getElementById('header-sub').innerHTML   = 'QRキーを発行しました。保存してください<br><span style="font-size:0.9em;opacity:0.85;">Your QR key has been issued. Please save it.</span>';
       setTimeout(() => buildQR(token), 100);
       saveToHash(name, token);
     }
