@@ -186,6 +186,13 @@
   </div>
 
   <script>
+    // PWA インストールイベントをキャプチャ（Chrome）
+    window.deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      window.deferredInstallPrompt = e;
+    });
+
     // URLハッシュからトークンと名前を読み込む
     function loadFromHash() {
       const hash = location.hash.slice(1);
@@ -308,45 +315,20 @@
 
         const dataURL = oc.toDataURL('image/png');
 
-        if (isIOS && isSafari) {
-          // iOS Safari: ファイル共有（写真アプリへ保存可能）
-          oc.toBlob(function(blob) {
-            const file = new File([blob], name + '_QR解錠キー.png', { type: 'image/png' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              navigator.share({ files: [file], title: 'QR解錠キー', text: name + 'さんのQR解錠キー' })
-                .catch(function(e) { if (e.name !== 'AbortError') showOverlay(dataURL); });
-            } else {
-              showOverlay(dataURL);
-            }
-          }, 'image/png');
-          return;
-        }
-
         if (isIOS) {
-          // iOS Chrome: 新しいタブに画像だけ表示 → 長押しで保存
-          const newWin = window.open('', '_blank');
-          if (newWin) {
-            newWin.document.write(
-              '<!DOCTYPE html><html><head>' +
-              '<meta charset="UTF-8">' +
-              '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-              '<title>QR画像を保存 - ' + name + '</title>' +
-              '<style>' +
-              'body{margin:0;background:#111;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}' +
-              'img{max-width:90%;max-height:75vh;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.5);}' +
-              'p{color:#fff;margin-top:20px;font-size:16px;text-align:center;line-height:1.7;padding:0 20px;}' +
-              'strong{color:#FFD700;}' +
-              'button{margin-top:16px;padding:12px 28px;background:#fff;color:#333;border:none;border-radius:24px;font-size:15px;font-weight:bold;cursor:pointer;}' +
-              '</style></head>' +
-              '<body>' +
-              '<img src="' + dataURL + '" />' +
-              '<p>📸 画像を<strong>長押し</strong>して<br>「写真に保存」を選んでください<br><span style="font-size:0.85em;color:#aaa;">Long-press image → Save to Photos</span></p>' +
-              '<button onclick="window.close()">閉じる / Close</button>' +
-              '</body></html>'
-            );
-            newWin.document.close();
+          if (isSafari) {
+            // iOS Safari: Web Share API でシェアシート → 写真アプリへ保存
+            oc.toBlob(function(blob) {
+              const file = new File([blob], name + '_QR解錠キー.png', { type: 'image/png' });
+              if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: 'QR解錠キー', text: name + 'さんのQR解錠キー' })
+                  .catch(function(e) { if (e.name !== 'AbortError') showOverlay(dataURL); });
+              } else {
+                showOverlay(dataURL);
+              }
+            }, 'image/png');
           } else {
-            // ポップアップブロック時はオーバーレイ
+            // iOS Chrome: オーバーレイ表示 → 画像を長押しして保存
             showOverlay(dataURL);
           }
           return;
@@ -396,45 +378,47 @@
 
       // ===== ホーム画面追加ボタン =====
       document.getElementById('btn-home').addEventListener('click', function() {
-        const isIOS      = /iphone|ipad|ipod/i.test(navigator.userAgent);
-        const isSafari   = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
+        const isIOS       = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        const isSafari    = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
         const isChromeIOS = /crios/i.test(navigator.userAgent);
-        const currentURL = location.href;
+        const isChrome    = /chrome/i.test(navigator.userAgent) && !/edge|opr\//i.test(navigator.userAgent);
 
         const guide = document.getElementById('guide-box');
         const title = document.getElementById('guide-title');
         const steps = document.getElementById('guide-steps');
 
-        // iOS Safariでは navigator.share でシェアシートを開く（→「ホーム画面に追加」選択可）
-        if (isSafari && navigator.share) {
-          navigator.share({
-            title: 'QR解錠キー - ' + name,
-            url: currentURL
-          }).catch(function(e) {});
+        // Chrome（デスクトップ/Android）: インストールプロンプトが使える場合
+        if (window.deferredInstallPrompt) {
+          window.deferredInstallPrompt.prompt();
           return;
         }
 
-        // それ以外はガイドを表示
         guide.style.display = 'block';
         guide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
         if (isChromeIOS) {
-          title.textContent = '📱 ホーム画面に追加する方法 / Add to Home Screen (Chrome)';
+          // iOS Chrome: Chromeメニューから直接ホーム画面に追加できる
+          title.textContent = '📱 Chrome でホーム画面に追加する方法';
           steps.innerHTML =
-            '<li>下のURLをコピーしてください：<br><small>Copy the URL below:</small></li>' +
-            '<div class="url-copy-box" id="url-display">' + currentURL + '</div>' +
-            '<button class="copy-btn" id="copy-btn" onclick="copyURL()">URLをコピー / Copy URL</button>' +
-            '<li style="margin-top:12px;"><strong>Safari</strong> を開き、コピーしたURLをアドレスバーに貼り付けて開く<br><small>Open <strong>Safari</strong> and paste the URL in the address bar</small></li>' +
-            '<li>Safari の画面下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>Tap the <strong>Share button (□↑)</strong> at the bottom of Safari</small></li>' +
-            '<li>「<strong>ホーム画面に追加</strong>」を選択 → 「追加」をタップ<br><small>Select "<strong>Add to Home Screen</strong>" → Tap "Add"</small></li>';
+            '<li>Chrome の右上 <strong>メニュー（⋮）</strong> をタップ<br><small>Map the <strong>menu (⋮)</strong> in Chrome</small></li>' +
+            '<li>「<strong>ホーム画面に追加</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>"</small></li>' +
+            '<li>「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>"</small></li>';
+        } else if (!isIOS && isChrome) {
+          // デスクトップ/Android Chrome
+          title.textContent = '📱 Chrome でホーム画面に追加する方法';
+          steps.innerHTML =
+            '<li>ブラウザ右上の <strong>メニュー（⋮）</strong> をタップ<br><small>Tap the <strong>menu (⋮)</strong> at top right</small></li>' +
+            '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>" or "<strong>Install App</strong>"</small></li>' +
+            '<li>「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>"</small></li>';
         } else if (isIOS && isSafari) {
-          title.textContent = '📱 Safari でホーム画面に追加する方法 / Add via Safari';
+          // Safari（サブ）
+          title.textContent = '📱 Safari でホーム画面に追加する方法';
           steps.innerHTML =
             '<li>画面下部の <strong>共有ボタン（□↑）</strong> をタップ<br><small>Tap the <strong>Share button (□↑)</strong> at the bottom</small></li>' +
             '<li>「<strong>ホーム画面に追加</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>"</small></li>' +
-            '<li>右上の「<strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>" in the upper right</small></li>';
+            '<li>右上の  <strong>追加</strong>」をタップ<br><small>Tap "<strong>Add</strong>" in the upper right</small></li>';
         } else {
-          title.textContent = '📱 ホーム画面への追加方法 / Add to Home Screen';
+          title.textContent = '📱  ホーム画面への追加方法';
           steps.innerHTML =
             '<li>ブラウザのメニュー（⋮）を開く<br><small>Open the browser menu (⋮)</small></li>' +
             '<li>「<strong>ホーム画面に追加</strong>」または「<strong>アプリをインストール</strong>」を選択<br><small>Select "<strong>Add to Home Screen</strong>" or "<strong>Install App</strong>"</small></li>' +
