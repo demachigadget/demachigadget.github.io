@@ -1,0 +1,867 @@
+<\!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>管理者ページ — 出町ガジェット QRキー管理</title>
+  <\!-- QRコード生成ライブラリ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* ===== ログイン画面 ===== */
+    #loginScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .login-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 40px 32px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+    }
+    .login-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .login-card h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+    }
+    .login-card p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 28px;
+    }
+    .login-card input[type="password"] {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1.5px solid #334155;
+      background: #0f172a;
+      color: #f1f5f9;
+      font-size: 16px;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .login-card input[type="password"]:focus {
+      border-color: #6366f1;
+    }
+    .btn-login {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: none;
+      background: #6366f1;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-login:hover { background: #4f46e5; }
+    .btn-login:active { transform: scale(0.98); }
+    .login-error {
+      color: #f87171;
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* ===== 管理画面 ===== */
+    #adminScreen { display: none; }
+
+    header {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    header span {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .admin-body {
+      padding: 24px 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ===== タブ ===== */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 6px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: #94a3b8; }
+    .tab-btn.active {
+      background: #6366f1;
+      color: #fff;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .stats-bar {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .stats-bar .count {
+      font-size: 28px;
+      font-weight: 800;
+      color: #6366f1;
+    }
+    .stats-bar .label {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .btn-refresh {
+      margin-left: auto;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1.5px solid #475569;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-refresh:hover {
+      border-color: #6366f1;
+      color: #6366f1;
+    }
+
+    /* テーブル */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #334155;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1e293b;
+    }
+    thead th {
+      background: #0f172a;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-align: left;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-bottom: 1px solid #334155;
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid #1e293b;
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #263449; }
+    tbody td {
+      padding: 14px 16px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    td.td-no { color: #475569; font-size: 12px; width: 40px; }
+    td.td-name { font-weight: 600; color: #f1f5f9; }
+    td.td-email { color: #94a3b8; font-size: 13px; word-break: break-all; }
+    td.td-date { color: #64748b; font-size: 12px; white-space: nowrap; }
+    td.td-qr { width: 90px; }
+    td.td-action { width: 90px; }
+
+    /* QR プレビュー */
+    .qr-thumb {
+      width: 72px;
+      height: 72px;
+      background: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qr-thumb:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+    }
+    .qr-thumb canvas,
+    .qr-thumb img {
+      width: 100% \!important;
+      height: 100% \!important;
+    }
+
+    /* 削除ボタン */
+    .btn-delete {
+      padding: 7px 14px;
+      border-radius: 7px;
+      border: 1.5px solid #ef4444;
+      background: transparent;
+      color: #ef4444;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-delete:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    /* 結果バッジ（利用履歴） */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .badge-granted {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .badge-denied {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* ローディング */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #475569;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #334155;
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 空状態 */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #475569;
+    }
+    .empty .icon { font-size: 40px; margin-bottom: 12px; }
+
+    /* QR 拡大モーダル */
+    #qrModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #qrModal.open { display: flex; }
+    .modal-inner {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      max-width: 320px;
+      width: 100%;
+      position: relative;
+    }
+    #modalName {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    #modalEmail {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 16px;
+      word-break: break-all;
+    }
+    #modalQr {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    #modalQr canvas, #modalQr img {
+      border-radius: 8px;
+    }
+    #modalToken {
+      font-size: 10px;
+      color: #94a3b8;
+      word-break: break-all;
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin-bottom: 16px;
+    }
+    .btn-modal-close {
+      padding: 10px 24px;
+      border-radius: 8px;
+      border: none;
+      background: #6366f1;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .modal-x {
+      position: absolute;
+      top: 12px; right: 14px;
+      background: none; border: none;
+      font-size: 22px; color: #94a3b8;
+      cursor: pointer; line-height: 1;
+    }
+
+    /* トースト */
+    #toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #f1f5f9;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 200;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { border-color: #ef4444; color: #f87171; }
+    #toast.success { border-color: #22c55e; color: #4ade80; }
+
+    /* ログアウトボタン */
+    .btn-logout {
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #475569;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: #f87171; color: #f87171; }
+  </style>
+</head>
+<body>
+
+<\!-- ===== ログイン画面 ===== -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-icon">🔐</div>
+    <h1>管理者ログイン</h1>
+    <p>QRキー管理ページへのアクセスには<br>管理者パスワードが必要です</p>
+    <input type="password" id="pwInput" placeholder="パスワードを入力" autocomplete="current-password" />
+    <button class="btn-login" id="btnLogin">ログイン</button>
+    <div class="login-error" id="loginError">パスワードが正しくありませこ</div>
+  </div>
+</div>
+
+<\!-- ===== 管理画面 ===== -->
+<div id="adminScreen">
+  <header>
+    <h1>🗝️ QRキー管理</h1>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="headerUser">出町ガジェット</span>
+      <button class="btn-logout" id="btnLogout">ログアウト</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+
+    <\!-- タブ切り替え -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="keys">🗝️ QRキー管理</button>
+      <button class="tab-btn" data-tab="history">📋 利用履歴</button>
+    </div>
+
+    <\!-- ===== QRキー管理タブ ===== -->
+    <div class="tab-panel active" id="panel-keys">
+      <div class="stats-bar">
+        <div>
+          <div class="count" id="countNum">—</div>
+          <div class="label">発行済みQRキー</div>
+        </div>
+        <button class="btn-refresh" id="btnRefresh">↺ 更新</button>
+      </div>
+      <div class="table-wrap" id="tableWrap">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>データを読み込んでいます...</div>
+        </div>
+      </div>
+    </div>
+
+    <\!-- ===== 利用履歴タブ ===== -->
+    <div class="tab-panel" id="panel-history">
+      <div class="stats-bar">
+        <div>
+          <div class="count" id="historyCount">—</div>
+          <div class="label">利用履歴（直近100件）</div>
+        </div>
+        <button class="btn-refresh" id="btnRefreshHistory">↺ 更新</button>
+      </div>
+      <div class="table-wrap" id="historyWrap">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>データを読み込んでいます...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<\!-- ===== QR拡大モーダル ===== -->
+<div id="qrModal">
+  <div class="modal-inner">
+    <button class="modal-x" id="modalX">✕</button>
+    <div id="modalName"></div>
+    <div id="modalEmail"></div>
+    <div id="modalQr"></div>
+    <div id="modalToken"></div>
+    <button class="btn-modal-close" id="modalClose">閉じる</button>
+  </div>
+</div>
+
+<\!-- ===== トースト ===== -->
+<div id="toast"></div>
+
+<script>
+// ================================================================
+// 設定
+// ================================================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxZH1P3FjKjvCbM1N3MA5AAcFtP1tm-W1voSTb3nfEF6TQpjUBI4fDIn7koOqPai8j3Nw/exec';
+
+let adminPassword = '';
+let registrations = [];
+let historyData   = [];
+let historyLoaded = false;
+
+// ================================================================
+// ログイン
+// ================================================================
+document.getElementById('btnLogin').addEventListener('click', tryLogin);
+document.getElementById('pwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryLogin();
+});
+
+async function tryLogin() {
+  const pw = document.getElementById('pwInput').value.trim();
+  if (\!pw) return;
+
+  const btn = document.getElementById('btnLogin');
+  btn.textContent = '確認中...';
+  btn.disabled = true;
+  document.getElementById('loginError').style.display = 'none';
+
+  try {
+    const res = await gasGet({ action: 'adminList', password: pw });
+    if (res.result === 'ok') {
+      adminPassword = pw;
+      registrations = res.data || [];
+      showAdminScreen();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  } catch (err) {
+    showToast('通信エラーが発生しました', 'error');
+  }
+
+  btn.textContent = 'ログイン';
+  btn.disabled = false;
+}
+
+// ================================================================
+// 管理画面表示
+// ================================================================
+function showAdminScreen() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminScreen').style.display = 'block';
+  renderTable(registrations);
+}
+
+document.getElementById('btnLogout').addEventListener('click', () => {
+  adminPassword = '';
+  registrations = [];
+  historyData   = [];
+  historyLoaded = false;
+  document.getElementById('pwInput').value = '';
+  document.getElementById('adminScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  // タブをキー管理に戻す
+  switchTab('keys');
+});
+
+// ================================================================
+// タブ切り替え
+// ================================================================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.getAttribute('data-tab');
+    switchTab(tab);
+  });
+});
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(`panel-${tab}`).classList.add('active');
+
+  // 利用履歴タブ：初回だけ自動ロード
+  if (tab === 'history' && \!historyLoaded) {
+    loadHistory();
+  }
+}
+
+// ================================================================
+// QRキー管理：更新
+// ================================================================
+document.getElementById('btnRefresh').addEventListener('click', refreshData);
+
+async function refreshData() {
+  const btn = document.getElementById('btnRefresh');
+  btn.textContent = '読込中...';
+  btn.disabled = true;
+
+  try {
+    const res = await gasGet({ action: 'adminList', password: adminPassword });
+    if (res.result === 'ok') {
+      registrations = res.data || [];
+      renderTable(registrations);
+      showToast('データを更新しました', 'success');
+    } else {
+      showToast(res.message || 'エラーが発生しました', 'error');
+    }
+  } catch (err) {
+    showToast('通信エラー', 'error');
+  }
+
+  btn.textContent = '↺ 更新';
+  btn.disabled = false;
+}
+
+// ================================================================
+// テーブル描画（QRキー管理）
+// ================================================================
+function renderTable(data) {
+  document.getElementById('countNum').textContent = data.length;
+  const wrap = document.getElementById('tableWrap');
+
+  if (data.length === 0) {
+    wrap.innerHTML = '<div class="empty"><div class="icon">📭</div><div>登録されたQRキーはありません</div></div>';
+    return;
+  }
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>名前</th>
+          <th>メールアドレス</th>
+          <th>発行日時</th>
+          <th>QRコード</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.forEach((row, idx) => {
+    const dateStr  = formatDate(row.timestamp);
+    const safeEmail = escapeHtml(row.email);
+    const safeName  = escapeHtml(row.name);
+    const safeToken = escapeHtml(row.token);
+
+    html += `
+      <tr>
+        <td class="td-no">${idx + 1}</td>
+        <td class="td-name">${safeName}</td>
+        <td class="td-email">${safeEmail}</td>
+        <td class="td-date">${dateStr}</td>
+        <td class="td-qr">
+          <div class="qr-thumb" id="qrThumb${idx}" data-idx="${idx}" title="クリックで拡大"></div>
+        </td>
+        <td class="td-action">
+          <button class="btn-delete" data-email="${safeEmail}" data-name="${safeName}">削除</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+
+  // QRコード描画
+  data.forEach((row, idx) => {
+    const el = document.getElementById('qrThumb' + idx);
+    if (el && row.token) {
+      generateQR(el, row.token, 70);
+      el.addEventListener('click', () => openModal(row));
+    }
+  });
+
+  // 削除ボタン
+  wrap.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const email = btn.getAttribute('data-email');
+      const name  = btn.getAttribute('data-name');
+      confirmDelete(email, name);
+    });
+  });
+}
+
+// ================================================================
+// 利用履歴：ロード・描画
+// ================================================================
+document.getElementById('btnRefreshHistory').addEventListener('click', () => {
+  historyLoaded = false;
+  loadHistory();
+});
+
+async function loadHistory() {
+  const btn = document.getElementById('btnRefreshHistory');
+  btn.textContent = '読込中...';
+  btn.disabled = true;
+  document.getElementById('historyWrap').innerHTML =
+    '<div class="loading"><div class="spinner"></div><div>読み込んでいます...</div></div>';
+
+  try {
+    const res = await gasGet({ action: 'adminHistory', password: adminPassword });
+    if (res.result === 'ok') {
+      historyData   = res.data || [];
+      historyLoaded = true;
+      renderHistory(historyData);
+    } else {
+      showToast(res.message || 'エラーが発生しました', 'error');
+      document.getElementById('historyWrap').innerHTML =
+        '<div class="empty"><div class="icon">⚠️</div><div>読み込みに失敗しました</div></div>';
+    }
+  } catch (err) {
+    showToast('通信エラー', 'error');
+    document.getElementById('historyWrap').innerHTML =
+      '<div class="empty"><div class="icon">⚠️</div><div>通信エラーが発生しました</div></div>';
+  }
+
+  btn.textContent = '↺ 更新';
+  btn.disabled = false;
+}
+
+function renderHistory(data) {
+  document.getElementById('historyCount').textContent = data.length;
+  const wrap = document.getElementById('historyWrap');
+
+  if (data.length === 0) {
+    wrap.innerHTML = '<div class="empty"><div class="icon">📋</div><div>利用履歴はまだありませこ</div></div>';
+    return;
+  }
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>日時</th>
+          <th>名前</th>
+          <th>メールアドレス</th>
+          <th>結果</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.forEach((row, idx) => {
+    const dateStr   = formatDate(row.timestamp);
+    const safeName  = escapeHtml(row.name  || '—');
+    const safeEmail = escapeHtml(row.email || '—');
+    const isGranted = row.result === 'granted';
+    const badge     = isGranted
+      ? '<span class="badge badge-granted">✓ 解錠成功</span>'
+      : '<span class="badge badge-denied">✗ 拒否</span>';
+
+    html += `
+      <tr>
+        <td class="td-no">${idx + 1}</td>
+        <td class="td-date">${dateStr}</td>
+        <td class="td-name">${safeName}</td>
+        <td class="td-email">${safeEmail}</td>
+        <td>${badge}</td>
+      </tr>
+    `;
+  });
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+// ================================================================
+// QRコード生成ユーティリティ
+// ================================================================
+function generateQR(container, token, size) {
+  container.innerHTML = '';
+  try {
+    new QRCode(container, {
+      text: token,
+      width: size,
+      height: size,
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch (e) {
+    container.textContent = '—';
+  }
+}
+
+// ================================================================
+// 削除確認 → 実行
+// ================================================================
+function confirmDelete(email, name) {
+  if (\!confirm(`「${name}（${email}）」のQRキーを削除しますか？\nこの操作は取り消せません。`)) return;
+  deleteEntry(email);
+}
+
+async function deleteEntry(email) {
+  try {
+    const res = await gasGet({ action: 'adminDelete', password: adminPassword, email: email });
+    if (res.result === 'ok') {
+      showToast('削除しました', 'success');
+      registrations = registrations.filter(r => r.email \!== email);
+      renderTable(registrations);
+    } else {
+      showToast(res.message || '削除に失敗しました', 'error');
+    }
+  } catch (err) {
+    showToast('通信エラー', 'error');
+  }
+}
+
+// ================================================================
+// QR拡大モーダル
+// ================================================================
+function openModal(row) {
+  document.getElementById('modalName').textContent  = row.name;
+  document.getElementById('modalEmail').textContent = row.email;
+  document.getElementById('modalToken').textContent = 'Token: ' + row.token;
+  document.getElementById('modalQr').innerHTML = '';
+  generateQR(document.getElementById('modalQr'), row.token, 200);
+  document.getElementById('qrModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('qrModal').classList.remove('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalX').addEventListener('click', closeModal);
+document.getElementById('qrModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('qrModal')) closeModal();
+});
+
+// ================================================================
+// GAS 通信
+// ================================================================
+function gasGet(params) {
+  const url = GAS_URL + '?' + Object.entries(params)
+    .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+    .join('&');
+  return fetch(url).then(r => r.json());
+}
+
+// ================================================================
+// ユーティリティ
+// ================================================================
+function formatDate(ts) {
+  if (\!ts) return '—';
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return String(ts).slice(0, 16);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+let toastTimer;
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + (type || '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 2800);
+}
+</script>
+</body>
+</html>
