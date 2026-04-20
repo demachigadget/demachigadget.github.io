@@ -1,11 +1,11 @@
-<\!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>管理者ページ — 出町ガジェット QRキー管理</title>
-  <\!-- QRコード生成ライブラリ -->
+  <!-- QRコード生成ライブラリ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -241,8 +241,8 @@
     }
     .qr-thumb canvas,
     .qr-thumb img {
-      width: 100% \!important;
-      height: 100% \!important;
+      width: 100% !important;
+      height: 100% !important;
     }
 
     /* 削除ボタン */
@@ -412,7 +412,7 @@
 </head>
 <body>
 
-<\!-- ===== ログイン画面 ===== -->
+<!-- ===== ログイン画面 ===== -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-icon">🔐</div>
@@ -420,11 +420,11 @@
     <p>QRキー管理ページへのアクセスには<br>管理者パスワードが必要です</p>
     <input type="password" id="pwInput" placeholder="パスワードを入力" autocomplete="current-password" />
     <button class="btn-login" id="btnLogin">ログイン</button>
-    <div class="login-error" id="loginError">パスワードが正しくありませこ</div>
+    <div class="login-error" id="loginError">パスワードが正しくありません</div>
   </div>
 </div>
 
-<\!-- ===== 管理画面 ===== -->
+<!-- ===== 管理画面 ===== -->
 <div id="adminScreen">
   <header>
     <h1>🗝️ QRキー管理</h1>
@@ -436,13 +436,13 @@
 
   <div class="admin-body">
 
-    <\!-- タブ切り替え -->
+    <!-- タブ切り替え -->
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="keys">🗝️ QRキー管理</button>
       <button class="tab-btn" data-tab="history">📋 利用履歴</button>
     </div>
 
-    <\!-- ===== QRキー管理タブ ===== -->
+    <!-- ===== QRキー管理タブ ===== -->
     <div class="tab-panel active" id="panel-keys">
       <div class="stats-bar">
         <div>
@@ -459,7 +459,7 @@
       </div>
     </div>
 
-    <\!-- ===== 利用履歴タブ ===== -->
+    <!-- ===== 利用履歴タブ ===== -->
     <div class="tab-panel" id="panel-history">
       <div class="stats-bar">
         <div>
@@ -479,7 +479,7 @@
   </div>
 </div>
 
-<\!-- ===== QR拡大モーダル ===== -->
+<!-- ===== QR拡大モーダル ===== -->
 <div id="qrModal">
   <div class="modal-inner">
     <button class="modal-x" id="modalX">✕</button>
@@ -491,7 +491,7 @@
   </div>
 </div>
 
-<\!-- ===== トースト ===== -->
+<!-- ===== トースト ===== -->
 <div id="toast"></div>
 
 <script>
@@ -515,7 +515,7 @@ document.getElementById('pwInput').addEventListener('keydown', e => {
 
 async function tryLogin() {
   const pw = document.getElementById('pwInput').value.trim();
-  if (\!pw) return;
+  if (!pw) return;
 
   const btn = document.getElementById('btnLogin');
   btn.textContent = '確認中...';
@@ -577,7 +577,7 @@ function switchTab(tab) {
   document.getElementById(`panel-${tab}`).classList.add('active');
 
   // 利用履歴タブ：初回だけ自動ロード
-  if (tab === 'history' && \!historyLoaded) {
+  if (tab === 'history' && !historyLoaded) {
     loadHistory();
   }
 }
@@ -721,7 +721,7 @@ function renderHistory(data) {
   const wrap = document.getElementById('historyWrap');
 
   if (data.length === 0) {
-    wrap.innerHTML = '<div class="empty"><div class="icon">📋</div><div>利用履歴はまだありませこ</div></div>';
+    wrap.innerHTML = '<div class="empty"><div class="icon">📋</div><div>利用履歴はまだありません</div></div>';
     return;
   }
 
@@ -784,7 +784,7 @@ function generateQR(container, token, size) {
 // 削除確認 → 実行
 // ================================================================
 function confirmDelete(email, name) {
-  if (\!confirm(`「${name}（${email}）」のQRキーを削除しますか？\nこの操作は取り消せません。`)) return;
+  if (!confirm(`「${name}（${email}）」のQRキーを削除しますか？\nこの操作は取り消せません。`)) return;
   deleteEntry(email);
 }
 
@@ -793,7 +793,7 @@ async function deleteEntry(email) {
     const res = await gasGet({ action: 'adminDelete', password: adminPassword, email: email });
     if (res.result === 'ok') {
       showToast('削除しました', 'success');
-      registrations = registrations.filter(r => r.email \!== email);
+      registrations = registrations.filter(r => r.email !== email);
       renderTable(registrations);
     } else {
       showToast(res.message || '削除に失敗しました', 'error');
@@ -839,7 +839,7 @@ function gasGet(params) {
 // ユーティリティ
 // ================================================================
 function formatDate(ts) {
-  if (\!ts) return '—';
+  if (!ts) return '—';
   const d = new Date(ts);
   if (isNaN(d.getTime())) return String(ts).slice(0, 16);
   const pad = n => String(n).padStart(2, '0');
