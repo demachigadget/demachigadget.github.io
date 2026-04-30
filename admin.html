@@ -287,6 +287,11 @@
       color: #fb923c;
       border: 1px solid rgba(251, 146, 60, 0.3);
     }
+    .badge-pending {
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
 
     /* ローディング */
     .loading {
@@ -748,13 +753,17 @@ function renderHistory(data) {
     const dateStr   = formatDate(row.timestamp);
     const safeName  = escapeHtml(row.name  || '—');
     const safeEmail = escapeHtml(row.email || '—');
-    const isGranted = (row.result === 'granted' || row.result === '解錠成功');
-    const isAwsFail = (row.result || '').includes('失敗');
-    const badge     = isGranted
-      ? '<span class="badge badge-granted">✓ 解錠成功</span>'
-      : isAwsFail
-      ? '<span class="badge badge-aws-fail">✗ AWS失敗</span>'
-      : '<span class="badge badge-denied">✗ 拒否</span>';
+    const result    = String(row.result || '');
+    let badge;
+    if (result === '解錠成功' || result === 'granted') {
+      badge = '<span class="badge badge-granted">✓ 解錠成功</span>';
+    } else if (result === '処理中') {
+      badge = '<span class="badge badge-pending">⏳ 結果不明</span>';
+    } else if (result.includes('失敗')) {
+      badge = '<span class="badge badge-aws-fail">✗ AWS失敗</span>';
+    } else {
+      badge = '<span class="badge badge-denied">✗ 拒否</span>';
+    }
 
     html += `
       <tr>
